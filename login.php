@@ -1,3 +1,9 @@
+<?php
+  if (strpos($_SERVER['REQUEST_URI'], 'login') > -1) {
+    http_response_code(404);
+    exit;
+  }
+?>
 <!DOCTYPE html>
 <html lang="de">
 <head>

@@ -31,6 +31,16 @@
         		return !(strpos($line, 'js') && strpos($line, 'css'));
         	}
         );
+        $times = array_map(
+          function ($line) {
+            $offset = strpos($line, '[') + 1;
+            $date = substr($line, $offset, strpos($line, ']') - $offset);
+            $offset = strpos($date, ':') + 1;
+        		return substr($date, $offset, 2);
+        	},
+        	$clicks
+        );
+        $times = array_count_values($times);
         $ips = array_map(
           function ($line) {
         		return substr($line, 0, strpos($line, ' '));
@@ -40,70 +50,48 @@
         echo '<p>Heute '.count($clicks).' Aufrufe von '.count(array_unique($ips)).' unterschiedlichen Geräten.</p>';
       }
     ?>
+    <div id="chartTimes"></div>
     <h2>Verlauf</h2>
-    <div id="chartClicks"></div>
-    <div id="chartDevices"></div>
-    <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
-    <script>
-      <?php
-        $path = $DOCUMENT_ROOT.'logs';
-        $files = array_diff(scandir($path), array('.', '..'));
-        $files = array_filter(
-          array_diff(scandir($path), array('.', '..')),
-          function ($file) {
-            return strpos($file, 'access.log') > -1 && strpos($file, 'gz') > -1;
+    <?php
+      $path = $DOCUMENT_ROOT.'logs';
+      $files = array_diff(scandir($path), array('.', '..'));
+      $files = array_filter(
+        array_diff(scandir($path), array('.', '..')),
+        function ($file) {
+          return strpos($file, 'access.log') > -1 && strpos($file, 'gz') > -1;
+        }
+      );
+
+      $labels = array();
+      $values1 = array();
+      $values2 = array();
+      foreach($files as $file) {
+        $resource = gzopen($path.'/'.$file, 'r');
+        $clicks = array_filter(
+          explode('" "-"', gzread($resource, 1048576)),
+          function ($line) {
+            return !(strpos($line, 'js') && strpos($line, 'css'));
           }
         );
-
-        $labels = array();
-        $values1 = array();
-        $values2 = array();
-        foreach($files as $file) {
-          $resource = gzopen($path.'/'.$file, 'r');
-          $clicks = array_filter(
-          	explode('"-"', gzread($resource, 1048576)),
-          	function ($line) {
-          		return !(strpos($line, 'js') && strpos($line, 'css'));
-          	}
-          );
-          $ips = array_map(
-            function ($line) {
-          		return substr($line, 0, strpos($line, ' '));
-          	},
-          	$clicks
-          );
-          $date = str_replace(
-            array('.1', '.2', '.3', '.4', '.5', '.6', '.7'),
-            array(' Mo',' Di',' Mi',' Do',' Fr',' Sa',' So',),
-            substr($file, 11, strpos($file, '.gz') - 11)
-          );
-          array_push($labels, 'KW '.$date);
-          array_push($values1, count($clicks));
-          array_push($values2, count(array_unique($ips)));
-          gzclose($resource);
-        }
-        echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ name: "Klicks", values: '.json_encode($values1).'}]};';
-        echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ name: "Geräte", values: '.json_encode($values2).'}]};';
-      ?>
-      const options = {
-        regionFill: 1,
-        hideDots: 1
+        $ips = array_map(
+          function ($line) {
+            return substr($line, 0, strpos($line, ' '));
+          },
+          $clicks
+        );
+        $date = str_replace(
+          array('.1', '.2', '.3', '.4', '.5', '.6', '.7'),
+          array(' Mo',' Di',' Mi',' Do',' Fr',' Sa',' So',),
+          substr($file, 11, strpos($file, '.gz') - 11)
+        );
+        array_push($labels, 'KW '.$date);
+        array_push($values1, count($clicks));
+        array_push($values2, count(array_unique($ips)));
+        gzclose($resource);
       }
-      new frappe.Chart("#chartClicks", {
-        title: 'Klicks',
-        data: dataClicks,
-        type: 'line',
-        colors: ['#1976D2'],
-        lineOptions: options
-      });
-      new frappe.Chart("#chartDevices", {
-        title: 'Geräte',
-        data: dataDevices,
-        type: 'line',
-        colors: ['#1976D2'],
-        lineOptions: options
-      });
-    </script>
+    ?>
+    <div id="chartClicks"></div>
+    <div id="chartDevices"></div>
     <h2>Traffic</h2>
     <p>
       Unten sehen Sie eine Tabelle mit Aufrufszahlen und Menge der transferierten Daten in den einzelnen Monaten des laufenden Jahres.
@@ -133,5 +121,38 @@
       1 GB = 1000 MB
     </p>
   </main>
+  <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
+  <script>
+    <?php
+      echo 'const dataTimes = { labels: '.json_encode(array_keys($times)).', datasets: [{ name: "Klicks", values: '.json_encode(array_values($times)).'}]};';
+      echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ name: "Klicks", values: '.json_encode($values1).'}]};';
+      echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ name: "Geräte", values: '.json_encode($values2).'}]};';
+    ?>
+    const options = {
+      regionFill: 1,
+      hideDots: 1
+    }
+    new frappe.Chart("#chartTimes", {
+      title: 'Klicks pro Stunde',
+      data: dataTimes,
+      type: 'line',
+      colors: ['#1976D2'],
+      lineOptions: options
+    });
+    new frappe.Chart("#chartClicks", {
+      title: 'Klicks',
+      data: dataClicks,
+      type: 'line',
+      colors: ['#1976D2'],
+      lineOptions: options
+    });
+    new frappe.Chart("#chartDevices", {
+      title: 'Geräte',
+      data: dataDevices,
+      type: 'line',
+      colors: ['#1976D2'],
+      lineOptions: options
+    });
+  </script>
 </body>
 </html>

@@ -51,7 +51,10 @@
       }
     ?>
     <div id="chartTimes"></div>
-    <div id="chartCountries"></div>
+    <div class="res-grid">
+      <div id="chartCountryClicks"></div>
+      <div id="chartCountryDevices"></div>
+    </div>
     <h2>Verlauf</h2>
     <?php
       $path = $DOCUMENT_ROOT.'logs';
@@ -154,17 +157,26 @@
       lineOptions: options
     });
 
-    const dataCountries = { labels: ['Loading', ''], datasets: [{ values: [1, 0] }] };
-    const countryChart = new frappe.Chart("#chartCountries", {
+    const dataLoading = { labels: ['Lade', ''], datasets: [{ values: [1, 0] }] };
+    const countryClickChart = new frappe.Chart("#chartCountryClicks", {
+      title: 'Klicks pro Land',
+      data: dataLoading,
+      type: 'bar',
+      colors: ['#1976D2']
+    });
+    const countryDeviceChart = new frappe.Chart("#chartCountryDevices", {
       title: 'Geräte pro Land',
-      data: dataCountries,
+      data: dataLoading,
       type: 'bar',
       colors: ['#1976D2']
     });
 
     fetch(location.origin + '/locations.php')
       .then(response => response.json())
-      .then(data => countryChart.update(data));
+      .then(data => {
+        countryClickChart.update(data[0]);
+        countryDeviceChart.update(data[1]);
+      });
   </script>
 </body>
 </html>

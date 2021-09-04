@@ -120,3 +120,14 @@ button {
 button, a, a * {
   transition-duration: .25s;
 }
+.res-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  overflow-x: hidden;
+}
+@media screen and (min-width: 1080px) {
+  .res-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 2fr);
+  }
+}

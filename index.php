@@ -1,3 +1,4 @@
+<?php require_once('common.php'); ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -12,7 +13,6 @@
     <h1>Anvil Solutions</h1>
   </header>
   <main>
-    <?php require_once('common.php'); ?>
     <h2>Heute</h2>
     <?php
       $filename = $DOCUMENT_ROOT.'logs/access.log.current';
@@ -157,12 +157,14 @@
       colors: ['#1976D2']
     });
 
-    fetch(location.origin + '/locations.json')
+    fetch('./locations.json')
       .then(response => response.json())
       .then(data => {
         countryClickChart.update(data[0]);
         countryDeviceChart.update(data[1]);
       });
+
+    history.replaceState(null, null, window.location.href);
   </script>
 </body>
 </html>

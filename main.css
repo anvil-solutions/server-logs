@@ -58,7 +58,7 @@ h3 {
   font-weight: 400;
   color: var(--text-color);
 }
-p, ul, table {
+p, ul, table, label {
   color: var(--text-color-secondary);
 }
 img {
@@ -112,18 +112,43 @@ a:hover {
   filter: brightness(1.4);
 }
 button {
-  vertical-align: middle;
-  display: inline-block;
-  border: 0;
   cursor: pointer;
 }
-button, a, a * {
+input, button, a, a * {
   transition-duration: .25s;
 }
 .res-grid {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   overflow-x: hidden;
+}
+.login {
+  max-width: 480px;
+}
+.login label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 16px;
+}
+.login input[type=password] {
+  display: inline-block;
+  border: 0;
+  padding: 8px 16px;
+  background: #fff;
+  color: var(--text-color);
+  font-size: 12px;
+  line-height: 1.25;
+  vertical-align: middle;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  outline: 0;
+}
+.login .btnContainer {
+  display: flex;
+}
+.login .btn {
+  margin: 0 0 0 auto;
 }
 @media screen and (min-width: 1080px) {
   .res-grid {

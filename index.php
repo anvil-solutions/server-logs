@@ -1,4 +1,4 @@
-<?php require_once('common.php'); ?>
+<?php require_once('./src/Common.php'); ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -41,7 +41,7 @@
 
         echo '<p>Heute insgesamt '.count($clicks).' Aufrufe von '.count(array_unique($ips)).' unterschiedlichen Geräten.</p>';
 
-        require_once('BrowserDetection.php');
+        require_once('./src/BrowserDetection.php');
         $_BROWSER = new foroco\BrowserDetection();
         $ipStore = array();
         $osMap = array();

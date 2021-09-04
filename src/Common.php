@@ -1,10 +1,5 @@
 <?php
   error_reporting(E_ALL);
-  if (strpos($_SERVER['REQUEST_URI'], 'common') > -1) {
-    http_response_code(404);
-    exit;
-  }
-
   $_passwordhash = '$2y$10$/oornTLB8QWBr0Osb6xdNuybzW3KAOtzEUy0yUK1nCqVgDeP8qs4G';
 
   session_start();
@@ -14,7 +9,7 @@
     }
   }
   if (!isset($_SESSION['loggedIn'])) {
-    include('login.php');
+    include('login.html');
     // Use the line below to get a new hash
     // echo '<p hidden>'.$_POST['password'].' '.password_hash($_POST['password'], PASSWORD_DEFAULT).'</p>';
     exit;

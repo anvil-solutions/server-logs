@@ -1,5 +1,5 @@
 <?php
-  require_once('common.php');
+  require_once('./src/Common.php');
 
   $filename = $DOCUMENT_ROOT.'logs/access.log.current';
   if (is_dir($filename) || !file_exists($filename)) {

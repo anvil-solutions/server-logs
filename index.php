@@ -143,7 +143,7 @@
       lineOptions: options
     });
 
-    const dataLoading = { labels: ['Lade', ''], datasets: [{ values: [1, 0] }] };
+    const dataLoading = { labels: ['Lädt'], datasets: [{ values: [0] }] };
     const countryClickChart = new frappe.Chart("#chartCountryClicks", {
       title: 'Klicks pro Land',
       data: dataLoading,
@@ -162,6 +162,11 @@
       .then(data => {
         countryClickChart.update(data[0]);
         countryDeviceChart.update(data[1]);
+      })
+      .catch(() => {
+        const dataError = { labels: ['Fehler'], datasets: [{ values: [1] }] };
+        countryClickChart.update(dataError);
+        countryDeviceChart.update(dataError);
       });
 
     history.replaceState(null, null, window.location.href);

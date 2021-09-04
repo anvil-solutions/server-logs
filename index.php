@@ -48,12 +48,6 @@
         );
 
         echo '<p>Heute '.count($clicks).' Aufrufe von '.count(array_unique($ips)).' unterschiedlichen Geräten.</p>';
-
-        $locations = array();
-        foreach($ips as $ip) {
-          //array_push($locations, json_decode(file_get_contents('https://geolocation-db.com/json/'.$ip))->country_code);
-        }
-        print_r(array_count_values($locations));
       }
     ?>
     <div id="chartTimes"></div>

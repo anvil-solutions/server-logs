@@ -12,22 +12,20 @@
     <h1>Anvil Solutions</h1>
   </header>
   <main>
-    <?php
-      error_reporting(E_ALL);
-      // Workaround for domains not connected to ~/
-      $DOCUMENT_ROOT = preg_replace('=^([/a-z0-9]+/htdocs/).*$=','\1',getenv('DOCUMENT_ROOT'));
-    ?>
+    <?php require_once('common.php'); ?>
     <h2>Heute</h2>
     <?php
       $filename = $DOCUMENT_ROOT.'logs/access.log.current';
       if (is_dir($filename) || !file_exists($filename)) {
         echo '<p>Es wurde keine Zugriffsdatei gefunden.</p>';
       } else {
-        $clicks = array_filter(
-        	file($filename),
-        	function ($line) {
-        		return !(strpos($line, 'js') && strpos($line, 'css'));
-        	}
+        $clicks = getRelevantEntries(file($filename));
+
+        $ips = array_map(
+          function ($line) {
+        		return substr($line, 0, strpos($line, ' '));
+        	},
+        	$clicks
         );
 
         $times = array_map(
@@ -40,14 +38,8 @@
         	$clicks
         );
         $times = array_count_values($times);
-        $ips = array_map(
-          function ($line) {
-        		return substr($line, 0, strpos($line, ' '));
-        	},
-        	$clicks
-        );
 
-        echo '<p>Heute '.count($clicks).' Aufrufe von '.count(array_unique($ips)).' unterschiedlichen Geräten.</p>';
+        echo '<p>Heute insgesamt '.count($clicks).' Aufrufe von '.count(array_unique($ips)).' unterschiedlichen Geräten.</p>';
       }
     ?>
     <div id="chartTimes"></div>
@@ -58,7 +50,6 @@
     <h2>Verlauf</h2>
     <?php
       $path = $DOCUMENT_ROOT.'logs';
-      $files = array_diff(scandir($path), array('.', '..'));
       $files = array_filter(
         array_diff(scandir($path), array('.', '..')),
         function ($file) {
@@ -67,16 +58,11 @@
       );
 
       $labels = array();
-      $values1 = array();
-      $values2 = array();
+      $dataClicks = array();
+      $dataDevices = array();
       foreach($files as $file) {
         $resource = gzopen($path.'/'.$file, 'r');
-        $clicks = array_filter(
-          explode('" "-"', gzread($resource, 1048576)),
-          function ($line) {
-            return !(strpos($line, 'js') && strpos($line, 'css'));
-          }
-        );
+        $clicks = getRelevantEntries(explode('" "-"', gzread($resource, 1048576)));
         $ips = array_map(
           function ($line) {
             return substr($line, 0, strpos($line, ' '));
@@ -89,8 +75,8 @@
           substr($file, 11, strpos($file, '.gz') - 11)
         );
         array_push($labels, 'KW '.$date);
-        array_push($values1, count($clicks));
-        array_push($values2, count(array_unique($ips)));
+        array_push($dataClicks, count($clicks));
+        array_push($dataDevices, count(array_unique($ips)));
         gzclose($resource);
       }
     ?>
@@ -127,9 +113,9 @@
   <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
   <script>
     <?php
-      echo 'const dataTimes = { labels: '.json_encode(array_keys($times)).', datasets: [{ values: '.json_encode(array_values($times)).'}]};';
-      echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($values1).'}]};';
-      echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($values2).'}]};';
+      echo 'const dataTimes = { labels: '.json_encode(array_keys($times)).', datasets: [{ values: '.json_encode(array_values($times)).'}] };';
+      echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataClicks).'}] };';
+      echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataDevices).'}] };';
     ?>
     const options = {
       regionFill: 1,
@@ -143,14 +129,14 @@
       lineOptions: options
     });
     new frappe.Chart("#chartClicks", {
-      title: 'Klicks',
+      title: 'Klicks pro Tag',
       data: dataClicks,
       type: 'line',
       colors: ['#1976D2'],
       lineOptions: options
     });
     new frappe.Chart("#chartDevices", {
-      title: 'Geräte',
+      title: 'Geräte pro Tag',
       data: dataDevices,
       type: 'line',
       colors: ['#1976D2'],
@@ -171,7 +157,7 @@
       colors: ['#1976D2']
     });
 
-    fetch(location.origin + '/locations.php')
+    fetch(location.origin + '/locations.json')
       .then(response => response.json())
       .then(data => {
         countryClickChart.update(data[0]);

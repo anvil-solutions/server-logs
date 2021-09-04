@@ -1,8 +1,6 @@
 <?php
-  error_reporting(E_ALL);
-  header('Content-Type: application/json; charset=utf-8');
-  // Workaround for domains not connected to ~/
-  $DOCUMENT_ROOT = preg_replace('=^([/a-z0-9]+/htdocs/).*$=','\1',getenv('DOCUMENT_ROOT'));
+  require_once('common.php');
+
   $filename = $DOCUMENT_ROOT.'logs/access.log.current';
   if (is_dir($filename) || !file_exists($filename)) {
     echo '[{"labels":["Lade","Fehler"],"datasets":[{"values":[0,1]}]}, {"labels":["Lade","Fehler"],"datasets":[{"values":[0,1]}]}]';
@@ -11,12 +9,7 @@
       function ($line) {
         return substr($line, 0, strpos($line, ' '));
       },
-      array_filter(
-        file($filename),
-        function ($line) {
-          return !(strpos($line, 'js') && strpos($line, 'css'));
-        }
-      )
+      getRelevantEntries(file($filename))
     );
 
     $locations = array();

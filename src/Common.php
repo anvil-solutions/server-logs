@@ -22,7 +22,13 @@
     return array_filter(
       $array,
       function ($line) {
-        return !(strpos($line, 'js') && strpos($line, 'css') && strpos($line, 'json'));
+        return strpos($line, '.js') === false
+          && strpos($line, '.css') === false
+          && strpos($line, '.json') === false
+          && strpos($line, '.ico') === false
+          && strpos($line, '.svg') === false
+          && strpos($line, '.png') === false
+          && strpos($line, '.jpg') === false;
       }
     );
   }

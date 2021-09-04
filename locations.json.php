@@ -15,7 +15,7 @@
     $locations = array();
     $locationMap = array();
     $ipClicks = array_count_values($ips);
-    foreach(array_unique($ips) as $ip) {
+    foreach (array_unique($ips) as $ip) {
       $country = json_decode(file_get_contents('https://geolocation-db.com/json/'.$ip))->country_code;
       if ($country == null || $country == '' || $country == 'Not found') $country = '?';
       array_push($locations, $country);

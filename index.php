@@ -40,12 +40,36 @@
         $times = array_count_values($times);
 
         echo '<p>Heute insgesamt '.count($clicks).' Aufrufe von '.count(array_unique($ips)).' unterschiedlichen Geräten.</p>';
+
+        require_once('BrowserDetection.php');
+        $_BROWSER = new foroco\BrowserDetection();
+        $ipStore = array();
+        $osMap = array();
+        $browserMap = array();
+        foreach ($clicks as $line) {
+          $ip = substr($line, 0, strpos($line, ' '));
+          if (!in_array($ip, $ipStore)) {
+            $offset = strposX($line, '"', 5) + 1;
+            $browserData = $_BROWSER->getAll(substr($line, $offset, strposX($line, '"', 6) - $offset));
+            isset($osMap[$browserData['os_name']])
+              ? $osMap[$browserData['os_name']] += 1
+              : $osMap[$browserData['os_name']] = 1;
+            isset($browserMap[$browserData['browser_name']])
+              ? $browserMap[$browserData['browser_name']] += 1
+              : $browserMap[$browserData['browser_name']] = 1;
+            array_push($ipStore, $ip);
+          }
+        }
+        arsort($osMap);
+        arsort($browserMap);
       }
     ?>
     <div id="chartTimes"></div>
     <div class="res-grid">
       <div id="chartCountryClicks"></div>
       <div id="chartCountryDevices"></div>
+      <div id="chartOSes"></div>
+      <div id="chartBrowsers"></div>
     </div>
     <h2>Verlauf</h2>
     <?php
@@ -60,7 +84,7 @@
       $labels = array();
       $dataClicks = array();
       $dataDevices = array();
-      foreach($files as $file) {
+      foreach ($files as $file) {
         $resource = gzopen($path.'/'.$file, 'r');
         $clicks = getRelevantEntries(explode('" "-"', gzread($resource, 1048576)));
         $ips = array_map(
@@ -114,6 +138,8 @@
   <script>
     <?php
       echo 'const dataTimes = { labels: '.json_encode(array_keys($times)).', datasets: [{ values: '.json_encode(array_values($times)).'}] };';
+      echo 'const dataOSes = { labels: '.json_encode(array_keys($osMap)).', datasets: [{ values: '.json_encode(array_values($osMap)).'}] };';
+      echo 'const dataBrowsers = { labels: '.json_encode(array_keys($browserMap)).', datasets: [{ values: '.json_encode(array_values($browserMap)).'}] };';
       echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataClicks).'}] };';
       echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataDevices).'}] };';
     ?>
@@ -127,6 +153,18 @@
       type: 'line',
       colors: ['#1976D2'],
       lineOptions: options
+    });
+    new frappe.Chart("#chartOSes", {
+      title: 'Genutzte Betriebssysteme',
+      data: dataOSes,
+      type: 'bar',
+      colors: ['#1976D2']
+    });
+    new frappe.Chart("#chartBrowsers", {
+      title: 'Genutzte Browser',
+      data: dataBrowsers,
+      type: 'bar',
+      colors: ['#1976D2']
     });
     new frappe.Chart("#chartClicks", {
       title: 'Klicks pro Tag',

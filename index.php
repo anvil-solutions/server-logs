@@ -20,17 +20,16 @@
     <h2>Heute</h2>
     <?php
       $filename = $DOCUMENT_ROOT.'logs/access.log.current';
-
       if (is_dir($filename) || !file_exists($filename)) {
         echo '<p>Es wurde keine Zugriffsdatei gefunden.</p>';
       } else {
-        $content = file($filename);
         $clicks = array_filter(
-        	$content,
+        	file($filename),
         	function ($line) {
         		return !(strpos($line, 'js') && strpos($line, 'css'));
         	}
         );
+
         $times = array_map(
           function ($line) {
             $offset = strpos($line, '[') + 1;
@@ -47,10 +46,18 @@
         	},
         	$clicks
         );
+
         echo '<p>Heute '.count($clicks).' Aufrufe von '.count(array_unique($ips)).' unterschiedlichen Geräten.</p>';
+
+        $locations = array();
+        foreach($ips as $ip) {
+          //array_push($locations, json_decode(file_get_contents('https://geolocation-db.com/json/'.$ip))->country_code);
+        }
+        print_r(array_count_values($locations));
       }
     ?>
     <div id="chartTimes"></div>
+    <div id="chartCountries"></div>
     <h2>Verlauf</h2>
     <?php
       $path = $DOCUMENT_ROOT.'logs';
@@ -103,9 +110,8 @@
       if (is_dir($filename) || !file_exists($filename)) {
         echo '<p>Es wurden keine Traffic-Daten gefunden.</p>';
       } else {
-        $content = implode('', file($filename));
         $doc = new DOMDocument();
-        $doc->loadHTML($content);
+        $doc->loadHTML(implode('', file($filename)));
         echo str_replace(
           'Megabytes',
           'MB',
@@ -124,9 +130,9 @@
   <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
   <script>
     <?php
-      echo 'const dataTimes = { labels: '.json_encode(array_keys($times)).', datasets: [{ name: "Klicks", values: '.json_encode(array_values($times)).'}]};';
-      echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ name: "Klicks", values: '.json_encode($values1).'}]};';
-      echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ name: "Geräte", values: '.json_encode($values2).'}]};';
+      echo 'const dataTimes = { labels: '.json_encode(array_keys($times)).', datasets: [{ values: '.json_encode(array_values($times)).'}]};';
+      echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($values1).'}]};';
+      echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($values2).'}]};';
     ?>
     const options = {
       regionFill: 1,
@@ -153,6 +159,18 @@
       colors: ['#1976D2'],
       lineOptions: options
     });
+
+    const dataCountries = { labels: ['Loading', ''], datasets: [{ values: [1, 0] }] };
+    const countryChart = new frappe.Chart("#chartCountries", {
+      title: 'Geräte pro Land',
+      data: dataCountries,
+      type: 'bar',
+      colors: ['#1976D2']
+    });
+
+    fetch(location.origin + '/locations.php')
+      .then(response => response.json())
+      .then(data => countryChart.update(data));
   </script>
 </body>
 </html>

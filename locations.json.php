@@ -11,14 +11,14 @@
     $deviceLocations = [];
     foreach ($file as $line) {
       if (isRelevantEntry($line)) {
-        $ip = substr($line, 0, strpos($line, ' '));
+        $ip = getIpFromLine($line);
         if (!isset($deviceLocations[$ip])) {
           $country = json_decode(file_get_contents('https://geolocation-db.com/json/'.$ip))->country_code;
-          if ($country === null || $country === '' || $country === 'Not found') $country = '?';
-          $deviceLocations[$ip] = $country;
-          isset($devicesPerLocation[$country])
-            ? $devicesPerLocation[$country]++
-            : $devicesPerLocation[$country] = 1;
+          if ($country === null || $country === '' || $country === 'Not found') $deviceLocations[$ip] = '?';
+          else $deviceLocations[$ip] = $country;
+          isset($devicesPerLocation[$deviceLocations[$ip]])
+            ? $devicesPerLocation[$deviceLocations[$ip]]++
+            : $devicesPerLocation[$deviceLocations[$ip]] = 1;
         }
         isset($clicksPerLocation[$deviceLocations[$ip]])
           ? $clicksPerLocation[$deviceLocations[$ip]]++

@@ -117,10 +117,16 @@ button {
 input, button, a, a * {
   transition-duration: .25s;
 }
-.res-grid {
+.res-grid, .week-grid {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
   overflow-x: hidden;
+}
+.res-grid {
+  grid-template-columns: repeat(1, 1fr);
+}
+.week-grid {
+  grid-template-columns: repeat(7, 7fr);
+  gap: 16px;
 }
 .login {
   max-width: 480px;

@@ -21,7 +21,7 @@
     <?php
       $filename = $DOCUMENT_ROOT.'logs/access.log.current';
       if (is_dir($filename) || !file_exists($filename)) {
-        echo '<p>Es wurde keine Zugriffsdatei gefunden.</p>';
+        echo '<p>Es wurde kein Zugriffsprotokoll gefunden.</p>';
       } else {
         require_once('./src/BrowserDetection.php');
         $_BROWSER = new foroco\BrowserDetection();
@@ -34,11 +34,10 @@
         foreach ($file as $line) {
           if (isRelevantEntry($line)) {
             $clicks++;
-            $ip = substr($line, 0, strpos($line, ' '));
+            $ip = getIpFromLine($line);
             if (!in_array($ip, $devices)) {
               array_push($devices, $ip);
-              $offset = strposX($line, '"', 5) + 1;
-              $browserData = $_BROWSER->getAll(substr($line, $offset, strposX($line, '"', 6) - $offset));
+              $browserData = $_BROWSER->getAll(getUserAgentFromLine($line));
               isset($osMap[$browserData['os_name']])
                 ? $osMap[$browserData['os_name']]++
                 : $osMap[$browserData['os_name']] = 1;
@@ -46,8 +45,7 @@
                 ? $browserMap[$browserData['browser_name']]++
                 : $browserMap[$browserData['browser_name']] = 1;
             }
-            $hour = substr($line, strpos($line, '['));
-        		$hour = substr($hour, strpos($hour, ':') + 1, 2);
+        		$hour = getHourFromLine($line);
             isset($clicksPerHour[$hour])
               ? $clicksPerHour[$hour]++
               : $clicksPerHour[$hour] = 1;
@@ -66,10 +64,6 @@
       <div id="chartOSes"></div>
       <div id="chartBrowsers"></div>
     </div>
-    <h2>Verlauf</h2>
-    <p>
-      Die folgenden Graphen zeigen Ihnen die Anzahl an Geräten und Klicks pro Wochentag der einzelnen Kalenderwochen.
-    </p>
     <?php
       $path = $DOCUMENT_ROOT.'logs';
       $files = array_filter(
@@ -90,21 +84,30 @@
         foreach ($file as $line) {
           if (isRelevantEntry($line)) {
             $clicks++;
-            $ip = substr($line, 0, strpos($line, ' '));
+            $ip = getIpFromLine($line);
             if (!in_array($ip, $devices)) array_push($devices, $ip);
           }
         }
         gzclose($resource);
-        $date = str_replace(
-          ['.1', '.2', '.3', '.4', '.5', '.6', '.7'],
-          [' Mo',' Di',' Mi',' Do',' Fr',' Sa',' So'],
-          substr($filename, 11, 4)
-        );
-        array_push($labels, 'KW '.$date);
+        array_push($labels, getReadableDate(substr($filename, 11, 4)));
         array_push($dataClicks, $clicks);
         array_push($dataDevices, count($devices));
       }
     ?>
+    <h2>Detailansicht</h2>
+    <p>Klicken Sie auf die einzelnen Tage um eine Detailansicht des Wochentages der jeweiligen Kalenderwoche zu erhalten.</p>
+    <div class="week-grid">
+      <?php
+        $files = array_reverse($files);
+        foreach (array_reverse($labels) as $index=>$label) {
+          echo '<a href="./details?i='.substr($files[$index], 11, 4).'">'.$label.'</a>';
+        }
+      ?>
+    </div>
+    <h2>Verlauf</h2>
+    <p>
+      Die folgenden Graphen zeigen Ihnen die Anzahl an Geräten und Klicks pro Wochentag der einzelnen Kalenderwochen.
+    </p>
     <div id="chartClicks"></div>
     <div id="chartDevices"></div>
     <h2>Monatliche Analyse</h2>
@@ -116,7 +119,7 @@
       $filename = $DOCUMENT_ROOT.'logs/traffic.html/index.html';
 
       if (is_dir($filename) || !file_exists($filename)) {
-        echo '<p>Es wurden keine Traffic-Daten gefunden.</p>';
+        echo '<p>Es wurde kein Zugriffsprotokoll gefunden.</p>';
       } else {
         $doc = new DOMDocument();
         $doc->loadHTML(implode('', file($filename)));

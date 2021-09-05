@@ -41,10 +41,33 @@
     );
   }
 
-  function strposX($haystack, $needle, $number = 0) {
-    return strpos($haystack, $needle,
-      $number > 1 ?
-      strposX($haystack, $needle, $number - 1) + strlen($needle) : 0
+  function getIpFromLine($line) {
+    return substr($line, 0, strpos($line, ' '));
+  }
+
+  function getUserAgentFromLine($line) {
+    $offset = strposX($line, '"', 5) + 1;
+    return substr($line, $offset, strposX($line, '"', 6) - $offset);
+  }
+
+  function getHourFromLine($line) {
+    $hour = substr($line, strpos($line, '['));
+    return substr($hour, strpos($hour, ':') + 1, 2);
+  }
+
+  function getReadableDate($string) {
+    return str_replace(
+      ['.1', '.2', '.3', '.4', '.5', '.6', '.7'],
+      [' Mo',' Di',' Mi',' Do',' Fr',' Sa',' So'],
+      $string
+    );
+  }
+
+  function strposX($haystack, $needle, $number = 1) {
+    if (substr_count($haystack, $needle) < $number) return false;
+    else return strpos($haystack, $needle, $number > 1
+      ? strposX($haystack, $needle, $number - 1) + strlen($needle)
+      : 0
     );
   }
 ?>

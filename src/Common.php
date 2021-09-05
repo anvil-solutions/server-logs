@@ -4,21 +4,21 @@
 
   session_cache_expire(30);
   session_start();
-  if (isset($_POST['password']) && password_verify($_POST['password'], $_passwordhash)) {
-    $_SESSION['loggedIn'] = $_SERVER['HTTP_USER_AGENT'];
-  } else {
-    isset($_SESSION['trys']) ? $_SESSION['trys']++ : $_SESSION['trys'] = 1;
-    if ($_SESSION['trys'] > 5) {
-      http_response_code(418);
-      include('locked.html');
+  if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] !== $_SERVER['HTTP_USER_AGENT']) {
+    if (isset($_POST['password']) && password_verify($_POST['password'], $_passwordhash)) {
+      $_SESSION['loggedIn'] = $_SERVER['HTTP_USER_AGENT'];
+    } else {
+      isset($_SESSION['trys']) ? $_SESSION['trys']++ : $_SESSION['trys'] = 1;
+      if ($_SESSION['trys'] > 5) {
+        http_response_code(418);
+        include('locked.html');
+      } else {
+        include('login.html');
+        // Use the line below to get a new hash
+        // echo '<p hidden>'.$_POST['password'].' '.password_hash($_POST['password'], PASSWORD_DEFAULT).'</p>';
+      }
       exit;
     }
-  }
-  if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] !== $_SERVER['HTTP_USER_AGENT']) {
-    include('login.html');
-    // Use the line below to get a new hash
-    // echo '<p hidden>'.$_POST['password'].' '.password_hash($_POST['password'], PASSWORD_DEFAULT).'</p>';
-    exit;
   }
 
   // Workaround for domains not connected to ~/

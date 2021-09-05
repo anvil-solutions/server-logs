@@ -52,10 +52,10 @@
             $offset = strposX($line, '"', 5) + 1;
             $browserData = $_BROWSER->getAll(substr($line, $offset, strposX($line, '"', 6) - $offset));
             isset($osMap[$browserData['os_name']])
-              ? $osMap[$browserData['os_name']] += 1
+              ? $osMap[$browserData['os_name']]++
               : $osMap[$browserData['os_name']] = 1;
             isset($browserMap[$browserData['browser_name']])
-              ? $browserMap[$browserData['browser_name']] += 1
+              ? $browserMap[$browserData['browser_name']]++
               : $browserMap[$browserData['browser_name']] = 1;
             array_push($ipStore, $ip);
           }

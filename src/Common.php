@@ -18,18 +18,20 @@
   // Workaround for domains not connected to ~/
   $DOCUMENT_ROOT = preg_replace('=^([/a-z0-9]+/htdocs/).*$=','\1',getenv('DOCUMENT_ROOT'));
 
+  function isRelevantEntry($line) {
+    return strpos($line, '.js') === false
+      && strpos($line, '.css') === false
+      && strpos($line, '.json') === false
+      && strpos($line, '.ico') === false
+      && strpos($line, '.svg') === false
+      && strpos($line, '.png') === false
+      && strpos($line, '.jpg') === false;
+  }
+
   function getRelevantEntries($array) {
     return array_filter(
       $array,
-      function ($line) {
-        return strpos($line, '.js') === false
-          && strpos($line, '.css') === false
-          && strpos($line, '.json') === false
-          && strpos($line, '.ico') === false
-          && strpos($line, '.svg') === false
-          && strpos($line, '.png') === false
-          && strpos($line, '.jpg') === false;
-      }
+      'isRelevantEntry'
     );
   }
 

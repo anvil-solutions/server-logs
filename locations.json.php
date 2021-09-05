@@ -5,27 +5,28 @@
   if (is_dir($filename) || !file_exists($filename)) {
     echo '[{"labels":["Fehler"],"datasets":[{"values":[1]}]}, {"labels":["Fehler"],"datasets":[{"values":[1]}]}]';
   } else {
-    $ips = array_map(
-      function ($line) {
-        return substr($line, 0, strpos($line, ' '));
-      },
-      getRelevantEntries(file($filename))
-    );
-
-    $locations = array();
-    $locationMap = array();
-    $ipClicks = array_count_values($ips);
-    foreach (array_unique($ips) as $ip) {
-      $country = json_decode(file_get_contents('https://geolocation-db.com/json/'.$ip))->country_code;
-      if ($country == null || $country == '' || $country == 'Not found') $country = '?';
-      array_push($locations, $country);
-      isset($locationMap[$country])
-        ? $locationMap[$country] += $ipClicks[$ip]
-        : $locationMap[$country] = $ipClicks[$ip];
+    $file = file($filename);
+    $devicesPerLocation = [];
+    $clicksPerLocation = [];
+    $deviceLocations = [];
+    foreach ($file as $line) {
+      if (isRelevantEntry($line)) {
+        $ip = substr($line, 0, strpos($line, ' '));
+        if (!isset($deviceLocations[$ip])) {
+          $country = json_decode(file_get_contents('https://geolocation-db.com/json/'.$ip))->country_code;
+          if ($country === null || $country === '' || $country === 'Not found') $country = '?';
+          $deviceLocations[$ip] = $country;
+          isset($devicesPerLocation[$country])
+            ? $devicesPerLocation[$country]++
+            : $devicesPerLocation[$country] = 1;
+        }
+        isset($clicksPerLocation[$deviceLocations[$ip]])
+          ? $clicksPerLocation[$deviceLocations[$ip]]++
+          : $clicksPerLocation[$deviceLocations[$ip]] = 1;
+      }
     }
-    $locations = array_count_values($locations);
-    arsort($locationMap);
-    arsort($locations);
-    echo '[{"labels":'.json_encode(array_keys($locationMap)).',"datasets":[{"values":'.json_encode(array_values($locationMap)).'}]},{"labels":'.json_encode(array_keys($locations)).',"datasets":[{"values":'.json_encode(array_values($locations)).'}]}]';
+    arsort($devicesPerLocation);
+    arsort($clicksPerLocation);
+    echo '[{"labels":'.json_encode(array_keys($clicksPerLocation)).',"datasets":[{"values":'.json_encode(array_values($clicksPerLocation)).'}]},{"labels":'.json_encode(array_keys($devicesPerLocation)).',"datasets":[{"values":'.json_encode(array_values($devicesPerLocation)).'}]}]';
   }
 ?>

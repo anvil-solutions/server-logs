@@ -19,49 +19,40 @@
       if (is_dir($filename) || !file_exists($filename)) {
         echo '<p>Es wurde keine Zugriffsdatei gefunden.</p>';
       } else {
-        $clicks = getRelevantEntries(file($filename));
-
-        $ips = array_map(
-          function ($line) {
-        		return substr($line, 0, strpos($line, ' '));
-        	},
-        	$clicks
-        );
-
-        $times = array_map(
-          function ($line) {
-            $offset = strpos($line, '[') + 1;
-            $date = substr($line, $offset, strpos($line, ']') - $offset);
-            $offset = strpos($date, ':') + 1;
-        		return substr($date, $offset, 2);
-        	},
-        	$clicks
-        );
-        $times = array_count_values($times);
-
-        echo '<p>Heute insgesamt '.count($clicks).' Aufrufe von '.count(array_unique($ips)).' unterschiedlichen Geräten.</p>';
-
         require_once('./src/BrowserDetection.php');
         $_BROWSER = new foroco\BrowserDetection();
-        $ipStore = array();
-        $osMap = array();
-        $browserMap = array();
-        foreach ($clicks as $line) {
-          $ip = substr($line, 0, strpos($line, ' '));
-          if (!in_array($ip, $ipStore)) {
-            $offset = strposX($line, '"', 5) + 1;
-            $browserData = $_BROWSER->getAll(substr($line, $offset, strposX($line, '"', 6) - $offset));
-            isset($osMap[$browserData['os_name']])
-              ? $osMap[$browserData['os_name']]++
-              : $osMap[$browserData['os_name']] = 1;
-            isset($browserMap[$browserData['browser_name']])
-              ? $browserMap[$browserData['browser_name']]++
-              : $browserMap[$browserData['browser_name']] = 1;
-            array_push($ipStore, $ip);
+        $file = file($filename);
+        $clicks = 0;
+        $devices = [];
+        $clicksPerHour = [];
+        $osMap = [];
+        $browserMap = [];
+        foreach ($file as $line) {
+          if (isRelevantEntry($line)) {
+            $clicks++;
+            $ip = substr($line, 0, strpos($line, ' '));
+            if (!in_array($ip, $devices)) {
+              array_push($devices, $ip);
+              $offset = strposX($line, '"', 5) + 1;
+              $browserData = $_BROWSER->getAll(substr($line, $offset, strposX($line, '"', 6) - $offset));
+              isset($osMap[$browserData['os_name']])
+                ? $osMap[$browserData['os_name']]++
+                : $osMap[$browserData['os_name']] = 1;
+              isset($browserMap[$browserData['browser_name']])
+                ? $browserMap[$browserData['browser_name']]++
+                : $browserMap[$browserData['browser_name']] = 1;
+            }
+            $hour = substr($line, strpos($line, '['));
+        		$hour = substr($hour, strpos($hour, ':') + 1, 2);
+            isset($clicksPerHour[$hour])
+              ? $clicksPerHour[$hour]++
+              : $clicksPerHour[$hour] = 1;
           }
         }
         arsort($osMap);
         arsort($browserMap);
+
+        echo '<p>Heute insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
       }
     ?>
     <div id="chartTimes"></div>
@@ -137,7 +128,7 @@
   <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
   <script>
     <?php
-      echo 'const dataTimes = { labels: '.json_encode(array_keys($times)).', datasets: [{ values: '.json_encode(array_values($times)).'}] };';
+      echo 'const dataTimes = { labels: '.json_encode(array_keys($clicksPerHour)).', datasets: [{ values: '.json_encode(array_values($clicksPerHour)).'}] };';
       echo 'const dataOSes = { labels: '.json_encode(array_keys($osMap)).', datasets: [{ values: '.json_encode(array_values($osMap)).'}] };';
       echo 'const dataBrowsers = { labels: '.json_encode(array_keys($browserMap)).', datasets: [{ values: '.json_encode(array_values($browserMap)).'}] };';
       echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataClicks).'}] };';

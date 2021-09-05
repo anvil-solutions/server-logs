@@ -13,7 +13,11 @@
     <h1>Anvil Solutions</h1>
   </header>
   <main>
-    <h2>Heute</h2>
+    <h2>Willkommen</h2>
+    <p>
+      Willkommen auf Ihrer Übersichtsseite. Nach 30 Minuten Inaktivität werden sie automatisch abgemeldet.
+    </p>
+    <h2>Heutige Analyse</h2>
     <?php
       $filename = $DOCUMENT_ROOT.'logs/access.log.current';
       if (is_dir($filename) || !file_exists($filename)) {
@@ -52,7 +56,7 @@
         arsort($osMap);
         arsort($browserMap);
 
-        echo '<p>Heute insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
+        echo '<p>Heute gab es insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
       }
     ?>
     <div id="chartTimes"></div>
@@ -63,6 +67,9 @@
       <div id="chartBrowsers"></div>
     </div>
     <h2>Verlauf</h2>
+    <p>
+      Die folgenden Graphen zeigen Ihnen die Anzahl an Geräten und Klicks pro Wochentag der einzelnen Kalenderwochen.
+    </p>
     <?php
       $path = $DOCUMENT_ROOT.'logs';
       $files = array_filter(
@@ -100,7 +107,7 @@
     ?>
     <div id="chartClicks"></div>
     <div id="chartDevices"></div>
-    <h2>Traffic</h2>
+    <h2>Monatliche Analyse</h2>
     <p>
       Unten sehen Sie eine Tabelle mit Aufrufszahlen und Menge der transferierten Daten in den einzelnen Monaten des laufenden Jahres.
     </p>

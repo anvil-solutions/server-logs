@@ -2,13 +2,19 @@
   error_reporting(E_ALL);
   $_passwordhash = '$2y$10$/oornTLB8QWBr0Osb6xdNuybzW3KAOtzEUy0yUK1nCqVgDeP8qs4G';
 
+  session_cache_expire(30);
   session_start();
-  if (isset($_POST['password'])) {
-    if (password_verify($_POST['password'], $_passwordhash)) {
-      $_SESSION['loggedIn'] = 1;
+  if (isset($_POST['password']) && password_verify($_POST['password'], $_passwordhash)) {
+    $_SESSION['loggedIn'] = $_SERVER['HTTP_USER_AGENT'];
+  } else {
+    isset($_SESSION['trys']) ? $_SESSION['trys']++ : $_SESSION['trys'] = 1;
+    if ($_SESSION['trys'] > 5) {
+      http_response_code(418);
+      include('locked.html');
+      exit;
     }
   }
-  if (!isset($_SESSION['loggedIn'])) {
+  if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] !== $_SERVER['HTTP_USER_AGENT']) {
     include('login.html');
     // Use the line below to get a new hash
     // echo '<p hidden>'.$_POST['password'].' '.password_hash($_POST['password'], PASSWORD_DEFAULT).'</p>';

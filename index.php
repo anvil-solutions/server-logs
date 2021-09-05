@@ -72,27 +72,30 @@
         }
       );
 
-      $labels = array();
-      $dataClicks = array();
-      $dataDevices = array();
-      foreach ($files as $file) {
-        $resource = gzopen($path.'/'.$file, 'r');
-        $clicks = getRelevantEntries(explode(PHP_EOL, gzread($resource, 1048576)));
-        $ips = array_map(
-          function ($line) {
-            return substr($line, 0, strpos($line, ' '));
-          },
-          $clicks
-        );
+      $labels = [];
+      $dataClicks = [];
+      $dataDevices = [];
+      foreach ($files as $filename) {
+        $resource = gzopen($path.'/'.$filename, 'r');
+        $file = explode(PHP_EOL, gzread($resource, 1048576));
+        $clicks = 0;
+        $devices = [];
+        foreach ($file as $line) {
+          if (isRelevantEntry($line)) {
+            $clicks++;
+            $ip = substr($line, 0, strpos($line, ' '));
+            if (!in_array($ip, $devices)) array_push($devices, $ip);
+          }
+        }
+        gzclose($resource);
         $date = str_replace(
-          array('.1', '.2', '.3', '.4', '.5', '.6', '.7'),
-          array(' Mo',' Di',' Mi',' Do',' Fr',' Sa',' So',),
-          substr($file, 11, strpos($file, '.gz') - 11)
+          ['.1', '.2', '.3', '.4', '.5', '.6', '.7'],
+          [' Mo',' Di',' Mi',' Do',' Fr',' Sa',' So'],
+          substr($filename, 11, 4)
         );
         array_push($labels, 'KW '.$date);
-        array_push($dataClicks, count($clicks));
-        array_push($dataDevices, count(array_unique($ips)));
-        gzclose($resource);
+        array_push($dataClicks, $clicks);
+        array_push($dataDevices, count($devices));
       }
     ?>
     <div id="chartClicks"></div>

@@ -86,7 +86,7 @@
       $dataDevices = array();
       foreach ($files as $file) {
         $resource = gzopen($path.'/'.$file, 'r');
-        $clicks = getRelevantEntries(explode('" "-"', gzread($resource, 1048576)));
+        $clicks = getRelevantEntries(explode(PHP_EOL, gzread($resource, 1048576)));
         $ips = array_map(
           function ($line) {
             return substr($line, 0, strpos($line, ' '));

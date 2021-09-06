@@ -1,6 +1,11 @@
 <?php
+  require_once('./src/Session.php');
+  if ($loggedIn === false) {
+    http_response_code(403);
+    exit;
+  }
+  
   require_once('./src/Common.php');
-
   $filename = $DOCUMENT_ROOT.'logs/access.log.current';
   if (is_dir($filename) || !file_exists($filename)) {
     echo '[{"labels":["Fehler"],"datasets":[{"values":[1]}]}, {"labels":["Fehler"],"datasets":[{"values":[1]}]}]';

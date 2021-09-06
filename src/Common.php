@@ -1,26 +1,4 @@
 <?php
-  error_reporting(E_ALL);
-  session_name('SESSION');
-  session_cache_expire(30);
-  session_start();
-  $settings = json_decode(file_get_contents(__DIR__.'/settings.json'));
-  if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] !== $_SERVER['HTTP_USER_AGENT']) {
-    if (isset($_POST['password']) && password_verify($_POST['password'], $settings->passwordHash)) {
-      $_SESSION['loggedIn'] = $_SERVER['HTTP_USER_AGENT'];
-    } else {
-      isset($_SESSION['trys']) ? $_SESSION['trys']++ : $_SESSION['trys'] = 1;
-      if ($_SESSION['trys'] > 5) {
-        http_response_code(418);
-        include('locked.html');
-      } else {
-        include('login.html');
-        // Use the line below to get a new hash
-        // echo '<p hidden>'.$_POST['password'].' '.password_hash($_POST['password'], PASSWORD_DEFAULT).'</p>';
-      }
-      exit;
-    }
-  }
-
   // Workaround for domains not connected to ~/
   $DOCUMENT_ROOT = preg_replace('=^([/a-z0-9]+/htdocs/).*$=','\1',getenv('DOCUMENT_ROOT'));
 

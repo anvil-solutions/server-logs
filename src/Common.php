@@ -5,7 +5,9 @@
   function isRelevantEntry($line) {
     $line = strtolower($line);
     return strpos($line, $_SERVER['HTTP_HOST']) === false
-      && strpos($line, '" 404') === false
+      && strpos($line, '" 3') === false
+      && strpos($line, '" 4') === false
+      && strpos($line, '" 5') === false
       && strpos($line, '.js') === false
       && strpos($line, '.css') === false
       && strpos($line, '.json') === false

@@ -129,12 +129,23 @@
     }
   ?>
   </div>
-  <h2>Umwandlungstabelle</h2>
-  <p>
-    1 kB = 1000 Bytes<br>
-    1 MB = 1000 kB<br>
-    1 GB = 1000 MB
-  </p>
+  <div class="res-grid">
+    <div>
+      <h2>Umwandlungstabelle</h2>
+      <p>
+        1 kB = 1000 Bytes<br>
+        1 MB = 1000 kB<br>
+        1 GB = 1000 MB
+      </p>
+    </div>
+    <div>
+      <h2>Einstellungen</h2>
+      <ul>
+        <li><a href="./password">Passwort ändern</a></li>
+        <li><a href="./logout">Abmelden</a></li>
+      </ul>
+    </div>
+  </div>
 </main>
 <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
 <script>

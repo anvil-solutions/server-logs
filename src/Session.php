@@ -8,7 +8,10 @@
   if (property_exists($settings, 'passwordHash')) {
     $newUser = false;
     if (isset($_POST['password'])) {
-      if (password_verify($_POST['password'], $settings->passwordHash)) $_SESSION['loggedIn'] = $_SERVER['HTTP_USER_AGENT'];
+      if (password_verify($_POST['password'], $settings->passwordHash)) {
+        $_SESSION['loggedIn'] = $_SERVER['HTTP_USER_AGENT'];
+        $_SESSION['trys'] = 0;
+      }
       else isset($_SESSION['trys']) ? $_SESSION['trys']++ : $_SESSION['trys'] = 1;
     }
   } else {

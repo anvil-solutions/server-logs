@@ -3,7 +3,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <title>Anvil</title>
+  <title>Anvil<?php if (isset($pageTitle)) echo ' - '.$pageTitle; ?></title>
   <link rel="icon" href="./favicon.ico">
   <link rel="stylesheet" type="text/css" href="./main.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

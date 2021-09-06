@@ -1,4 +1,5 @@
 <?php
+  $pageTitle = 'Details';
   require_once('./src/layout/header.php');
   if (!isset($_GET['i'])) $_GET['i'] = '0';
 ?>

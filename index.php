@@ -1,4 +1,7 @@
-<?php require_once('./src/layout/header.php'); ?>
+<?php 
+  $pageTitle = 'Übersicht';
+  require_once('./src/layout/header.php');
+?>
 <main>
   <h2>Willkommen</h2>
   <p>

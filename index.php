@@ -253,6 +253,13 @@
   });
 
   const regionConverter = new Intl.DisplayNames(['de'], { type: 'region' });
+  function convertRegion(d) {
+    try {
+      return regionConverter.of(d);
+    } catch (e) {
+      return 'Unbekannt';
+    }
+  }
   const dataLoading = { labels: ['Lädt'], datasets: [{ values: [0] }] };
   const countryClickChart = new frappe.Chart("#chartCountryClicks", {
     title: 'Klicks pro Land',
@@ -263,7 +270,7 @@
       xAxisMode: 'tick'
     },
     tooltipOptions: {
-      formatTooltipX: d => regionConverter.of(d),
+      formatTooltipX: convertRegion,
       formatTooltipY: d => d + ' Klicks'
     }
   });
@@ -276,7 +283,7 @@
       xAxisMode: 'tick'
     },
     tooltipOptions: {
-      formatTooltipX: d => regionConverter.of(d),
+      formatTooltipX: convertRegion,
       formatTooltipY: d => d + ' Geräte'
     }
   });

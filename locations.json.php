@@ -4,7 +4,7 @@
     http_response_code(403);
     exit;
   }
-  
+
   require_once('./src/Common.php');
   $filename = $DOCUMENT_ROOT.'logs/access.log.current';
   if (is_dir($filename) || !file_exists($filename)) {

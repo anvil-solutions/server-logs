@@ -5,7 +5,7 @@
 <main>
   <h2>Willkommen</h2>
   <p>
-    Willkommen auf Ihrer Übersichtsseite. Nach 30 Minuten Inaktivität werden sie automatisch abgemeldet.
+    Willkommen auf Ihrer Übersichtsseite. Mit Schließen des Browsers werden Sie automatisch abgemeldet.
   </p>
   <h2>Heutige Analyse</h2>
   <?php

@@ -1,7 +1,6 @@
 <?php
   error_reporting(E_ALL);
   session_name('SESSION');
-  session_cache_expire(30);
   session_start();
   $settings = json_decode(file_get_contents(__DIR__.'/settings.json'));
   $newUser = true;

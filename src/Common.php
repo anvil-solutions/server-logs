@@ -3,7 +3,9 @@
   $DOCUMENT_ROOT = preg_replace('=^([/a-z0-9]+/htdocs/).*$=','\1',getenv('DOCUMENT_ROOT'));
 
   function isRelevantEntry($line) {
+    $line = strtolower($line);
     return strpos($line, $_SERVER['HTTP_HOST']) === false
+      && strpos($line, '" 404') === false
       && strpos($line, '.js') === false
       && strpos($line, '.css') === false
       && strpos($line, '.json') === false

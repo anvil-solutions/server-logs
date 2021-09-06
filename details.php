@@ -21,7 +21,7 @@
       $file = explode(PHP_EOL, $file);
       $clicks = 0;
       $devices = [];
-      $clicksPerHour = [];
+      $clicksPerHour = array_fill(0, 24, 0);
       $osMap = [];
       $browserMap = [];
       $fileMap = [];
@@ -39,10 +39,7 @@
               ? $browserMap[$browserData['browser_name']]++
               : $browserMap[$browserData['browser_name']] = 1;
           }
-      		$hour = getHourFromLine($line);
-          isset($clicksPerHour[$hour])
-            ? $clicksPerHour[$hour]++
-            : $clicksPerHour[$hour] = 1;
+          $clicksPerHour[getHourFromLine($line)]++;
           $request = getRequestFromLine($line);
           if ($request !== false) isset($fileMap[$request])
             ? $fileMap[$request]++
@@ -67,7 +64,7 @@
 <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
 <script>
   <?php
-    echo 'const dataTimes = { labels: '.json_encode(array_keys($clicksPerHour)).', datasets: [{ values: '.json_encode(array_values($clicksPerHour)).'}] };';
+    echo 'const dataTimes = { labels: '.json_encode(array_keys($clicksPerHour)).', datasets: [{ values: '.json_encode(array_values($clicksPerHour)).'}], yMarkers: [{ label: "Durchschnitt", value: '.(array_sum($clicksPerHour) / count($clicksPerHour)).' }] };';
     echo 'const dataOSes = { labels: '.json_encode(array_keys($osMap)).', datasets: [{ values: '.json_encode(array_values($osMap)).'}] };';
     echo 'const dataBrowsers = { labels: '.json_encode(array_keys($browserMap)).', datasets: [{ values: '.json_encode(array_values($browserMap)).'}] };';
     echo 'const dataFiles = { labels: '.json_encode(array_keys($fileMap)).', datasets: [{ values: '.json_encode(array_values($fileMap)).'}] };';

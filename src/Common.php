@@ -1,11 +1,11 @@
 <?php
   error_reporting(E_ALL);
-  $_passwordhash = '$2y$10$/oornTLB8QWBr0Osb6xdNuybzW3KAOtzEUy0yUK1nCqVgDeP8qs4G';
-
+  session_name('SESSION');
   session_cache_expire(30);
   session_start();
+  $settings = json_decode(file_get_contents(__DIR__.'/settings.json'));
   if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] !== $_SERVER['HTTP_USER_AGENT']) {
-    if (isset($_POST['password']) && password_verify($_POST['password'], $_passwordhash)) {
+    if (isset($_POST['password']) && password_verify($_POST['password'], $settings->passwordHash)) {
       $_SESSION['loggedIn'] = $_SERVER['HTTP_USER_AGENT'];
     } else {
       isset($_SESSION['trys']) ? $_SESSION['trys']++ : $_SESSION['trys'] = 1;

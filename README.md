@@ -24,4 +24,4 @@ This tool allows you to view and interpret the logged data on your IONOS server 
 - [PHP Browser Detection](https://github.com/foroco/php-browser-detection) (MIT License)
 
 ## Getting Started
-Just copy the files into a folder on your IONOS web space and change the [password hash](https://github.com/anvil-solutions/server-logs/blob/main/src/settings.json#L2).
+Just copy the files into a folder on your IONOS webspace and set the password upon the first login.

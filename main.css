@@ -132,7 +132,8 @@ input, button, a, a * {
   max-width: 480px;
 }
 .login label {
-  display: flex;
+  display: grid;
+  grid-template-columns: 35% auto;
   align-items: center;
   gap: 16px;
   margin: 0 0 16px;

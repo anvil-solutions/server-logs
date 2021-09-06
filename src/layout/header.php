@@ -15,13 +15,14 @@
   </header>
   <?php
     if ($loggedIn === false) {
-      if (isset($_SESSION['trys']) && $_SESSION['trys'] > 5) {
+      if ($newUser) {
+        include('first.html');
+      }
+      else if (isset($_SESSION['trys']) && $_SESSION['trys'] > 5) {
         http_response_code(418);
         include('locked.html');
       } else {
         include('login.html');
-        // Use the line below to get a new hash
-        // echo '<p hidden>'.$_POST['password'].' '.password_hash($_POST['password'], PASSWORD_DEFAULT).'</p>';
       }
       exit;
     }

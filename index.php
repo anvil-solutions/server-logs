@@ -74,37 +74,54 @@
     $labels = [];
     $dataClicks = [];
     $dataDevices = [];
+    $fileDateMap = [];
     foreach ($files as $filename) {
+      $file = '';
       $resource = gzopen($path.'/'.$filename, 'r');
-      $file = explode(PHP_EOL, gzread($resource, 1048576));
+      while (!gzeof($resource)) $file .= gzread($resource, 4096);
+      gzclose($resource);
+      $file = explode(PHP_EOL, $file);
       $clicks = 0;
       $devices = [];
+      $fileDateMap[$filename] = [];
+      $currentDate = getDateFromLine($file[0]);
       foreach ($file as $line) {
         if (isRelevantEntry($line)) {
+          $date = getDateFromLine($line);
+          if ($date !== $currentDate) {
+            array_push($labels, $currentDate);
+            array_push($dataClicks, $clicks);
+            array_push($dataDevices, count($devices));
+            array_push($fileDateMap[$filename], $currentDate);
+            $currentDate = $date;
+            $clicks = 0;
+            $devices = [];
+          }
           $clicks++;
           $ip = getIpFromLine($line);
           if (!in_array($ip, $devices)) array_push($devices, $ip);
         }
       }
-      gzclose($resource);
-      array_push($labels, getReadableDate(substr($filename, 11, 4)));
+      array_push($labels, $currentDate);
       array_push($dataClicks, $clicks);
       array_push($dataDevices, count($devices));
+      array_push($fileDateMap[$filename], $currentDate);
     }
   ?>
   <h2>Detailansicht</h2>
-  <p>Klicken Sie auf die einzelnen Tage um eine Detailansicht des Wochentages der jeweiligen Kalenderwoche zu erhalten.</p>
+  <p>Klicken Sie auf die einzelnen Tage um eine Detailansicht des jeweiligen Datums zu erhalten.</p>
   <div class="week-grid">
     <?php
-      $files = array_reverse($files);
-      foreach (array_reverse($labels) as $index=>$label) {
-        echo '<a href="./details?i='.substr($files[$index], 11, 4).'">'.$label.'</a>';
+      foreach (array_reverse($fileDateMap) as $key => $file) {
+        foreach (array_reverse($file) as $date) {
+          echo '<a href="./details?i='.$key.'&j='.$date.'">'.$date.'</a>';
+        }
       }
     ?>
   </div>
   <h2>Verlauf</h2>
   <p>
-    Die folgenden Graphen zeigen Ihnen die Anzahl an Geräten und Klicks pro Wochentag der einzelnen Kalenderwochen.
+    Die folgenden Graphen zeigen Ihnen die Anzahl an Geräten und Klicks pro Tag für die aufgezeichnete Zeitspanne.
   </p>
   <div id="chartClicks"></div>
   <div id="chartDevices"></div>
@@ -166,53 +183,102 @@
     data: dataTimes,
     type: 'line',
     colors: ['#1976D2'],
-    lineOptions: options
+    lineOptions: options,
+    tooltipOptions: {
+      formatTooltipX: d => d + ' Uhr',
+      formatTooltipY: d => d + ' Klicks'
+    }
   });
   new frappe.Chart("#chartOSes", {
     title: 'Genutzte Betriebssysteme',
     data: dataOSes,
     type: 'bar',
-    colors: ['#1976D2']
+    colors: ['#1976D2'],
+    axisOptions: {
+      xAxisMode: 'tick'
+    },
+    tooltipOptions: {
+      formatTooltipY: d => d + ' Geräte'
+    }
   });
   new frappe.Chart("#chartBrowsers", {
     title: 'Genutzte Browser',
     data: dataBrowsers,
     type: 'bar',
-    colors: ['#1976D2']
+    colors: ['#1976D2'],
+    axisOptions: {
+      xAxisMode: 'tick'
+    },
+    tooltipOptions: {
+      formatTooltipY: d => d + ' Geräte'
+    }
   });
   new frappe.Chart("#chartFiles", {
     title: 'Am Häufigsten angefragt',
     data: dataFiles,
     type: 'bar',
-    colors: ['#1976D2']
+    colors: ['#1976D2'],
+    axisOptions: {
+      xAxisMode: 'tick'
+    },
+    tooltipOptions: {
+      formatTooltipY: d => d + ' Anfragen'
+    }
   });
   new frappe.Chart("#chartClicks", {
     title: 'Klicks pro Tag',
     data: dataClicks,
     type: 'line',
     colors: ['#1976D2'],
-    lineOptions: options
+    lineOptions: options,
+    axisOptions: {
+      xIsSeries: true
+    },
+    tooltipOptions: {
+      formatTooltipY: d => d + ' Klicks'
+    }
   });
   new frappe.Chart("#chartDevices", {
     title: 'Geräte pro Tag',
     data: dataDevices,
     type: 'line',
     colors: ['#1976D2'],
-    lineOptions: options
+    lineOptions: options,
+    axisOptions: {
+      xIsSeries: true
+    },
+    tooltipOptions: {
+      formatTooltipY: d => d + ' Geräte'
+    }
   });
 
+  const regionConverter = new Intl.DisplayNames(['de'], { type: 'region' });
   const dataLoading = { labels: ['Lädt'], datasets: [{ values: [0] }] };
   const countryClickChart = new frappe.Chart("#chartCountryClicks", {
     title: 'Klicks pro Land',
     data: dataLoading,
     type: 'bar',
-    colors: ['#1976D2']
+    colors: ['#1976D2'],
+    axisOptions: {
+      xAxisMode: 'tick'
+    },
+    tooltipOptions: {
+      formatTooltipX: d => regionConverter.of(d),
+      formatTooltipY: d => d + ' Klicks'
+    }
   });
   const countryDeviceChart = new frappe.Chart("#chartCountryDevices", {
     title: 'Geräte pro Land',
     data: dataLoading,
     type: 'bar',
-    colors: ['#1976D2']
+    colors: ['#1976D2'],
+    axisOptions: {
+      xAxisMode: 'tick'
+    },
+    tooltipOptions: {
+      formatTooltipX: d => regionConverter.of(d),
+      formatTooltipY: d => d + ' Geräte'
+    }
   });
 
   fetch('./locations.json')

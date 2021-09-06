@@ -4,7 +4,8 @@
 
   function isRelevantEntry($line) {
     $line = strtolower($line);
-    return strpos($line, $_SERVER['HTTP_HOST']) === false
+    return strlen($line) > 0
+      && strpos($line, $_SERVER['HTTP_HOST']) === false
       && strpos($line, '" 3') === false
       && strpos($line, '" 4') === false
       && strpos($line, '" 5') === false
@@ -43,17 +44,17 @@
     return substr($line, $offset, strposX($line, '"', 6) - $offset);
   }
 
+  function getDateFromLine($line) {
+    return substr($line, strpos($line, '[') + 1, 11);
+  }
+
   function getHourFromLine($line) {
     $hour = substr($line, strpos($line, '['));
-    return substr($hour, strpos($hour, ':') + 1, 2);
+    return (int)substr($hour, strpos($hour, ':') + 1, 2);
   }
 
   function getReadableDate($string) {
-    return str_replace(
-      ['.1', '.2', '.3', '.4', '.5', '.6', '.7'],
-      [' Mo',' Di',' Mi',' Do',' Fr',' Sa',' So'],
-      $string
-    );
+    return substr_replace(substr_replace($string, '. ', 6, 1), '. ', 2, 1);
   }
 
   function strposX($haystack, $needle, $number = 1) {

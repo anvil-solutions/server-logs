@@ -2,19 +2,23 @@
   $pageTitle = 'Details';
   require_once('./src/layout/header.php');
   if (!isset($_GET['i'])) $_GET['i'] = '0';
+  if (!isset($_GET['j'])) $_GET['j'] = '0';
 ?>
 <main>
   <a href="./">← Zurück zur Startseite</a>
-  <h2>Übersicht für "KW <?php echo getReadableDate($_GET['i']); ?>"</h2>
+  <h2>Übersicht für den <?php echo getReadableDate($_GET['j']); ?></h2>
   <?php
-    $filename = $DOCUMENT_ROOT.'logs/access.log.'.(isset($_GET['i']) ? $_GET['i'] : '0').'.gz';
-    if (is_dir($filename) || !file_exists($filename)) {
+    $filename = $DOCUMENT_ROOT.'logs/'.$_GET['i'];
+    if (is_dir($filename) || !file_exists($filename) || $_GET['j'] === '0') {
       echo '<p>Es wurde kein Zugriffsprotokoll gefunden.</p>';
     } else {
       require_once('./src/BrowserDetection.php');
       $_BROWSER = new foroco\BrowserDetection();
+      $file = '';
       $resource = gzopen($filename, 'r');
-      $file = explode(PHP_EOL, gzread($resource, 1048576));
+      while (!gzeof($resource)) $file .= gzread($resource, 4096);
+      gzclose($resource);
+      $file = explode(PHP_EOL, $file);
       $clicks = 0;
       $devices = [];
       $clicksPerHour = [];
@@ -22,7 +26,7 @@
       $browserMap = [];
       $fileMap = [];
       foreach ($file as $line) {
-        if (isRelevantEntry($line)) {
+        if (getDateFromLine($line) === $_GET['j'] && isRelevantEntry($line)) {
           $clicks++;
           $ip = getIpFromLine($line);
           if (!in_array($ip, $devices)) {
@@ -45,13 +49,12 @@
             : $fileMap[$request] = 1;
         }
       }
-      gzclose($resource);
       arsort($osMap);
       arsort($browserMap);
       arsort($fileMap);
       array_splice($fileMap, 5);
 
-      echo '<p>Für "KW '.getReadableDate($_GET['i']).'" gab es insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
+      echo '<p>Am '.getReadableDate($_GET['j']).' gab es insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
     }
   ?>
   <div id="chartTimes"></div>
@@ -69,33 +72,54 @@
     echo 'const dataBrowsers = { labels: '.json_encode(array_keys($browserMap)).', datasets: [{ values: '.json_encode(array_values($browserMap)).'}] };';
     echo 'const dataFiles = { labels: '.json_encode(array_keys($fileMap)).', datasets: [{ values: '.json_encode(array_values($fileMap)).'}] };';
   ?>
-  const options = {
-    regionFill: 1,
-    hideDots: 1
-  }
   new frappe.Chart("#chartTimes", {
     title: 'Klicks pro Stunde',
     data: dataTimes,
     type: 'line',
     colors: ['#1976D2'],
-    lineOptions: options
+    lineOptions: {
+      regionFill: 1,
+      hideDots: 1
+    },
+    tooltipOptions: {
+      formatTooltipX: d => d + ' Uhr',
+      formatTooltipY: d => d + ' Klicks'
+    }
   });
   new frappe.Chart("#chartOSes", {
     title: 'Genutzte Betriebssysteme',
     data: dataOSes,
     type: 'bar',
-    colors: ['#1976D2']
+    colors: ['#1976D2'],
+    axisOptions: {
+      xAxisMode: 'tick'
+    },
+    tooltipOptions: {
+      formatTooltipY: d => d + ' Geräte'
+    }
   });
   new frappe.Chart("#chartBrowsers", {
     title: 'Genutzte Browser',
     data: dataBrowsers,
     type: 'bar',
-    colors: ['#1976D2']
+    colors: ['#1976D2'],
+    axisOptions: {
+      xAxisMode: 'tick'
+    },
+    tooltipOptions: {
+      formatTooltipY: d => d + ' Geräte'
+    }
   });
   new frappe.Chart("#chartFiles", {
     title: 'Am Häufigsten angefragt',
     data: dataFiles,
     type: 'bar',
-    colors: ['#1976D2']
+    colors: ['#1976D2'],
+    axisOptions: {
+      xAxisMode: 'tick'
+    },
+    tooltipOptions: {
+      formatTooltipY: d => d + ' Klicks'
+    }
   });
 </script>

@@ -3,5 +3,5 @@
   session_name('SESSION');
   session_cache_expire(30);
   session_start();
-  $loggedIn = isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === $_SERVER['HTTP_USER_AGENT']
+  $loggedIn = isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === $_SERVER['HTTP_USER_AGENT'];
 ?>

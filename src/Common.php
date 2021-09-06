@@ -3,13 +3,17 @@
   $DOCUMENT_ROOT = preg_replace('=^([/a-z0-9]+/htdocs/).*$=','\1',getenv('DOCUMENT_ROOT'));
 
   function isRelevantEntry($line) {
-    return strpos($line, '.js') === false
+    return strpos($line, $_SERVER['HTTP_HOST']) === false
+      && strpos($line, '.js') === false
       && strpos($line, '.css') === false
       && strpos($line, '.json') === false
       && strpos($line, '.ico') === false
       && strpos($line, '.svg') === false
       && strpos($line, '.png') === false
-      && strpos($line, '.jpg') === false;
+      && strpos($line, '.jpg') === false
+      && strpos($line, '.xml') === false
+      && strpos($line, '.txt') === false
+      && strpos($line, '.env') === false;
   }
 
   function getRelevantEntries($array) {
@@ -21,6 +25,13 @@
 
   function getIpFromLine($line) {
     return substr($line, 0, strpos($line, ' '));
+  }
+
+  function getRequestFromLine($line) {
+    $offset = strpos($line, '"GET ');
+    if ($offset === false) return false;
+    else $offset += 5;
+    return str_replace(['.html', '.php'], '', substr($line, $offset, strpos($line, ' HTTP/') - $offset));
   }
 
   function getUserAgentFromLine($line) {

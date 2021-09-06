@@ -1,4 +1,4 @@
-<?php 
+<?php
   $pageTitle = 'Übersicht';
   require_once('./src/layout/header.php');
 ?>
@@ -21,6 +21,7 @@
       $clicksPerHour = [];
       $osMap = [];
       $browserMap = [];
+      $fileMap = [];
       foreach ($file as $line) {
         if (isRelevantEntry($line)) {
           $clicks++;
@@ -39,10 +40,16 @@
           isset($clicksPerHour[$hour])
             ? $clicksPerHour[$hour]++
             : $clicksPerHour[$hour] = 1;
+        	$request = getRequestFromLine($line);
+          if ($request !== false) isset($fileMap[$request])
+            ? $fileMap[$request]++
+            : $fileMap[$request] = 1;
         }
       }
       arsort($osMap);
       arsort($browserMap);
+      arsort($fileMap);
+      array_splice($fileMap, 5);
 
       echo '<p>Heute gab es insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
     }
@@ -54,6 +61,7 @@
     <div id="chartOSes"></div>
     <div id="chartBrowsers"></div>
   </div>
+  <div id="chartFiles"></div>
   <?php
     $path = $DOCUMENT_ROOT.'logs';
     $files = array_filter(
@@ -134,6 +142,7 @@
     echo 'const dataTimes = { labels: '.json_encode(array_keys($clicksPerHour)).', datasets: [{ values: '.json_encode(array_values($clicksPerHour)).'}] };';
     echo 'const dataOSes = { labels: '.json_encode(array_keys($osMap)).', datasets: [{ values: '.json_encode(array_values($osMap)).'}] };';
     echo 'const dataBrowsers = { labels: '.json_encode(array_keys($browserMap)).', datasets: [{ values: '.json_encode(array_values($browserMap)).'}] };';
+    echo 'const dataFiles = { labels: '.json_encode(array_keys($fileMap)).', datasets: [{ values: '.json_encode(array_values($fileMap)).'}] };';
     echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataClicks).'}] };';
     echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataDevices).'}] };';
   ?>
@@ -157,6 +166,12 @@
   new frappe.Chart("#chartBrowsers", {
     title: 'Genutzte Browser',
     data: dataBrowsers,
+    type: 'bar',
+    colors: ['#1976D2']
+  });
+  new frappe.Chart("#chartFiles", {
+    title: 'Am Häufigsten angefragt',
+    data: dataFiles,
     type: 'bar',
     colors: ['#1976D2']
   });

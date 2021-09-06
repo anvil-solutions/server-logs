@@ -8,10 +8,12 @@ This tool allows you to view and interpret the logged data on your IONOS server 
   - Devices per country
   - Operating systems used
   - Browsers used
+  - Most requested pages
 - Detailed daily data
   - Clicks per hour
   - Operating systems used
   - Browsers used
+  - Most requested pages
 - Daily data
   - Clicks per day
   - Devices per day

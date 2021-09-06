@@ -20,6 +20,7 @@
       $clicksPerHour = [];
       $osMap = [];
       $browserMap = [];
+      $fileMap = [];
       foreach ($file as $line) {
         if (isRelevantEntry($line)) {
           $clicks++;
@@ -38,11 +39,17 @@
           isset($clicksPerHour[$hour])
             ? $clicksPerHour[$hour]++
             : $clicksPerHour[$hour] = 1;
+          $request = getRequestFromLine($line);
+          if ($request !== false) isset($fileMap[$request])
+            ? $fileMap[$request]++
+            : $fileMap[$request] = 1;
         }
       }
       gzclose($resource);
       arsort($osMap);
       arsort($browserMap);
+      arsort($fileMap);
+      array_splice($fileMap, 5);
 
       echo '<p>Für "KW '.getReadableDate($_GET['i']).'" gab es insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
     }
@@ -52,6 +59,7 @@
     <div id="chartOSes"></div>
     <div id="chartBrowsers"></div>
   </div>
+  <div id="chartFiles"></div>
 </main>
 <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
 <script>
@@ -59,6 +67,7 @@
     echo 'const dataTimes = { labels: '.json_encode(array_keys($clicksPerHour)).', datasets: [{ values: '.json_encode(array_values($clicksPerHour)).'}] };';
     echo 'const dataOSes = { labels: '.json_encode(array_keys($osMap)).', datasets: [{ values: '.json_encode(array_values($osMap)).'}] };';
     echo 'const dataBrowsers = { labels: '.json_encode(array_keys($browserMap)).', datasets: [{ values: '.json_encode(array_values($browserMap)).'}] };';
+    echo 'const dataFiles = { labels: '.json_encode(array_keys($fileMap)).', datasets: [{ values: '.json_encode(array_values($fileMap)).'}] };';
   ?>
   const options = {
     regionFill: 1,
@@ -80,6 +89,12 @@
   new frappe.Chart("#chartBrowsers", {
     title: 'Genutzte Browser',
     data: dataBrowsers,
+    type: 'bar',
+    colors: ['#1976D2']
+  });
+  new frappe.Chart("#chartFiles", {
+    title: 'Am Häufigsten angefragt',
+    data: dataFiles,
     type: 'bar',
     colors: ['#1976D2']
   });

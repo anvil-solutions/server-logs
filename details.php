@@ -54,12 +54,12 @@
       echo '<p>Am '.getReadableDate($_GET['j']).' gab es insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
     }
   ?>
-  <div id="chartTimes"></div>
+  <div id="chartTimes" data-title="Klicks pro Stunde" data-type="line"></div>
   <div class="res-grid">
-    <div id="chartOSes"></div>
-    <div id="chartBrowsers"></div>
+    <div id="chartOSes" data-title="Genutzte Betriebssysteme" data-type="bar"></div>
+    <div id="chartBrowsers" data-title="Genutzte Browser" data-type="bar"></div>
   </div>
-  <div id="chartFiles"></div>
+  <div id="chartFiles" data-title="Am Häufigsten angefragt" data-type="bar"></div>
 </main>
 <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
 <script>
@@ -69,54 +69,30 @@
     echo 'const dataBrowsers = { labels: '.json_encode(array_keys($browserMap)).', datasets: [{ values: '.json_encode(array_values($browserMap)).'}] };';
     echo 'const dataFiles = { labels: '.json_encode(array_keys($fileMap)).', datasets: [{ values: '.json_encode(array_values($fileMap)).'}] };';
   ?>
-  new frappe.Chart("#chartTimes", {
-    title: 'Klicks pro Stunde',
-    data: dataTimes,
-    type: 'line',
-    colors: ['#1976D2'],
-    lineOptions: {
-      regionFill: 1,
-      hideDots: 1
-    },
-    tooltipOptions: {
-      formatTooltipX: d => d + ' Uhr',
-      formatTooltipY: d => d + ' Klicks'
-    }
+  function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
+    const dataset = document.querySelector(id).dataset;
+    return new frappe.Chart(id, {
+      title: dataset.title,
+      data: data,
+      type: dataset.type,
+      colors: ['#1976D2'],
+      lineOptions: { regionFill: 1, hideDots: 1 },
+      axisOptions: axisOptions,
+      tooltipOptions: tooltipOptions
+    });
+  }
+
+  initChart('#chartTimes', dataTimes, {
+    formatTooltipX: d => d + ' Uhr',
+    formatTooltipY: d => d + ' Klicks'
   });
-  new frappe.Chart("#chartOSes", {
-    title: 'Genutzte Betriebssysteme',
-    data: dataOSes,
-    type: 'bar',
-    colors: ['#1976D2'],
-    axisOptions: {
-      xAxisMode: 'tick'
-    },
-    tooltipOptions: {
-      formatTooltipY: d => d + ' Geräte'
-    }
-  });
-  new frappe.Chart("#chartBrowsers", {
-    title: 'Genutzte Browser',
-    data: dataBrowsers,
-    type: 'bar',
-    colors: ['#1976D2'],
-    axisOptions: {
-      xAxisMode: 'tick'
-    },
-    tooltipOptions: {
-      formatTooltipY: d => d + ' Geräte'
-    }
-  });
-  new frappe.Chart("#chartFiles", {
-    title: 'Am Häufigsten angefragt',
-    data: dataFiles,
-    type: 'bar',
-    colors: ['#1976D2'],
-    axisOptions: {
-      xAxisMode: 'tick'
-    },
-    tooltipOptions: {
-      formatTooltipY: d => d + ' Klicks'
-    }
-  });
+  initChart('#chartOSes', dataOSes, {
+    formatTooltipY: d => d + ' Geräte'
+  }, { xAxisMode: 'tick' });
+  initChart('#chartBrowsers', dataBrowsers, {
+    formatTooltipY: d => d + ' Geräte'
+  }, { xAxisMode: 'tick' });
+  initChart('#chartFiles', dataFiles, {
+    formatTooltipY: d => d + ' Klicks'
+  }, { xAxisMode: 'tick' });
 </script>

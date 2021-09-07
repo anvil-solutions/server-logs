@@ -51,14 +51,14 @@
       echo '<p>Heute gab es insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
     }
   ?>
-  <div id="chartTimes"></div>
+  <div id="chartTimes" data-title="Klicks pro Stunde" data-type="line"></div>
   <div class="res-grid">
-    <div id="chartCountryClicks"></div>
-    <div id="chartCountryDevices"></div>
-    <div id="chartOSes"></div>
-    <div id="chartBrowsers"></div>
+    <div id="chartCountryClicks" data-title="Klicks pro Land" data-type="bar"></div>
+    <div id="chartCountryDevices" data-title="Geräte pro Land" data-type="bar"></div>
+    <div id="chartOSes" data-title="Genutzte Betriebssysteme" data-type="bar"></div>
+    <div id="chartBrowsers" data-title="Genutzte Browser" data-type="bar"></div>
   </div>
-  <div id="chartFiles"></div>
+  <div id="chartFiles" data-title="Am Häufigsten angefragt" data-type="bar"></div>
   <?php
     $path = $DOCUMENT_ROOT.'logs';
     $files = array_filter(
@@ -120,8 +120,8 @@
   <p>
     Die folgenden Graphen zeigen Ihnen die Anzahl an Geräten und Klicks pro Tag für die aufgezeichnete Zeitspanne.
   </p>
-  <div id="chartClicks"></div>
-  <div id="chartDevices"></div>
+  <div id="chartClicks" data-title="Klicks pro Tag" data-type="line"></div>
+  <div id="chartDevices" data-title="Geräte pro Tag" data-type="line"></div>
   <h2>Monatliche Analyse</h2>
   <p>
     Unten sehen Sie eine Tabelle mit Aufrufszahlen und Menge der transferierten Daten in den einzelnen Monaten des laufenden Jahres.
@@ -171,85 +171,42 @@
     echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataClicks).'}], yMarkers: [{ label: "Durchschnitt", value: '.(array_sum($dataClicks) / count($dataClicks)).' }] };';
     echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataDevices).'}], yMarkers: [{ label: "Durchschnitt", value: '.(array_sum($dataDevices) / count($dataDevices)).' }] };';
   ?>
-  const options = {
-    regionFill: 1,
-    hideDots: 1
+  function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
+    const dataset = document.querySelector(id).dataset;
+    return new frappe.Chart(id, {
+      title: dataset.title,
+      data: data,
+      type: dataset.type,
+      colors: ['#1976D2'],
+      lineOptions: { regionFill: 1, hideDots: 1 },
+      axisOptions: axisOptions,
+      tooltipOptions: tooltipOptions
+    });
   }
-  new frappe.Chart("#chartTimes", {
-    title: 'Klicks pro Stunde',
-    data: dataTimes,
-    type: 'line',
-    colors: ['#1976D2'],
-    lineOptions: options,
-    tooltipOptions: {
-      formatTooltipX: d => d + ' Uhr',
-      formatTooltipY: d => d + ' Klicks'
-    }
+
+  initChart('#chartTimes', dataTimes, {
+    formatTooltipX: d => d + ' Uhr',
+    formatTooltipY: d => d + ' Klicks'
   });
-  new frappe.Chart("#chartOSes", {
-    title: 'Genutzte Betriebssysteme',
-    data: dataOSes,
-    type: 'bar',
-    colors: ['#1976D2'],
-    axisOptions: {
-      xAxisMode: 'tick'
-    },
-    tooltipOptions: {
-      formatTooltipY: d => d + ' Geräte'
-    }
-  });
-  new frappe.Chart("#chartBrowsers", {
-    title: 'Genutzte Browser',
-    data: dataBrowsers,
-    type: 'bar',
-    colors: ['#1976D2'],
-    axisOptions: {
-      xAxisMode: 'tick'
-    },
-    tooltipOptions: {
-      formatTooltipY: d => d + ' Geräte'
-    }
-  });
-  new frappe.Chart("#chartFiles", {
-    title: 'Am Häufigsten angefragt',
-    data: dataFiles,
-    type: 'bar',
-    colors: ['#1976D2'],
-    axisOptions: {
-      xAxisMode: 'tick'
-    },
-    tooltipOptions: {
-      formatTooltipY: d => d + ' Anfragen'
-    }
-  });
-  new frappe.Chart("#chartClicks", {
-    title: 'Klicks pro Tag',
-    data: dataClicks,
-    type: 'line',
-    colors: ['#1976D2'],
-    lineOptions: options,
-    axisOptions: {
-      xIsSeries: true
-    },
-    tooltipOptions: {
-      formatTooltipY: d => d + ' Klicks'
-    }
-  });
-  new frappe.Chart("#chartDevices", {
-    title: 'Geräte pro Tag',
-    data: dataDevices,
-    type: 'line',
-    colors: ['#1976D2'],
-    lineOptions: options,
-    axisOptions: {
-      xIsSeries: true
-    },
-    tooltipOptions: {
-      formatTooltipY: d => d + ' Geräte'
-    }
-  });
+  initChart('#chartOSes', dataOSes, {
+    formatTooltipY: d => d + ' Geräte'
+  }, { xAxisMode: 'tick' });
+  initChart('#chartBrowsers', dataBrowsers, {
+    formatTooltipY: d => d + ' Geräte'
+  }, { xAxisMode: 'tick' });
+  initChart('#chartFiles', dataFiles, {
+    formatTooltipY: d => d + ' Klicks'
+  }, { xAxisMode: 'tick' });
+  initChart('#chartClicks', dataClicks, {
+    formatTooltipY: d => d + ' Klicks'
+  }, { xIsSeries: true });
+  initChart('#chartDevices', dataDevices, {
+    formatTooltipY: d => d + ' Geräte'
+  }, { xIsSeries: true });
 
   const regionConverter = new Intl.DisplayNames(['de'], { type: 'region' });
+  const dataLoading = { labels: ['Lädt', ''], datasets: [{ values: [1, 0] }] };
+  const dataError = { labels: ['', 'Fehler'], datasets: [{ values: [0, 1] }] };
   function convertRegion(d) {
     try {
       return regionConverter.of(d);
@@ -257,33 +214,14 @@
       return 'Unbekannt';
     }
   }
-  const dataLoading = { labels: ['Lädt'], datasets: [{ values: [0] }] };
-  const countryClickChart = new frappe.Chart("#chartCountryClicks", {
-    title: 'Klicks pro Land',
-    data: dataLoading,
-    type: 'bar',
-    colors: ['#1976D2'],
-    axisOptions: {
-      xAxisMode: 'tick'
-    },
-    tooltipOptions: {
-      formatTooltipX: convertRegion,
-      formatTooltipY: d => d + ' Klicks'
-    }
-  });
-  const countryDeviceChart = new frappe.Chart("#chartCountryDevices", {
-    title: 'Geräte pro Land',
-    data: dataLoading,
-    type: 'bar',
-    colors: ['#1976D2'],
-    axisOptions: {
-      xAxisMode: 'tick'
-    },
-    tooltipOptions: {
-      formatTooltipX: convertRegion,
-      formatTooltipY: d => d + ' Geräte'
-    }
-  });
+  const countryClickChart = initChart('#chartCountryClicks', dataLoading, {
+    formatTooltipX: convertRegion,
+    formatTooltipY: d => d + ' Klicks'
+  }, { xAxisMode: 'tick' });
+  const countryDeviceChart = initChart('#chartCountryDevices', dataLoading, {
+    formatTooltipX: convertRegion,
+    formatTooltipY: d => d + ' Geräte'
+  }, { xAxisMode: 'tick' });
 
   fetch('./locations.json')
     .then(response => response.json())
@@ -292,7 +230,6 @@
       countryDeviceChart.update(data[1]);
     })
     .catch(() => {
-      const dataError = { labels: ['Fehler'], datasets: [{ values: [1] }] };
       countryClickChart.update(dataError);
       countryDeviceChart.update(dataError);
     });

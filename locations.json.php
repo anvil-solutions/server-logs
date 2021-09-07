@@ -5,10 +5,11 @@
     exit;
   }
 
+  header('Content-Type: application/json; charset=utf-8');
   require_once('./src/Common.php');
   $filename = $DOCUMENT_ROOT.'logs/access.log.current';
   if (is_dir($filename) || !file_exists($filename)) {
-    echo '[{"labels":["Fehler"],"datasets":[{"values":[1]}]}, {"labels":["Fehler"],"datasets":[{"values":[1]}]}]';
+    echo '[]';
   } else {
     $file = file($filename);
     $devicesPerLocation = [];

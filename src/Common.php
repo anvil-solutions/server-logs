@@ -18,6 +18,11 @@
       && strpos($line, '.jpg') === false
       && strpos($line, '.xml') === false
       && strpos($line, '.txt') === false
+      && strpos($line, '.ttf') === false
+      && strpos($line, '.woff') === false
+      && strpos($line, '.woff2') === false
+      && strpos($line, '.mp3') === false
+      && strpos($line, '.mp4') === false
       && strpos($line, '.env') === false;
   }
 

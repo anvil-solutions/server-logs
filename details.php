@@ -20,7 +20,7 @@
       gzclose($resource);
       $file = explode(PHP_EOL, $file);
       $clicks = 0;
-      $devices = [];
+      $deviceMap = [];
       $clicksPerHour = array_fill(0, 24, 0);
       $osMap = [];
       $browserMap = [];
@@ -29,8 +29,7 @@
         if (getDateFromLine($line) === $_GET['j'] && isRelevantEntry($line)) {
           $clicks++;
           $ip = getIpFromLine($line);
-          if (!in_array($ip, $devices)) {
-            array_push($devices, $ip);
+          if (!isset($deviceMap[$ip])) {
             $browserData = $_BROWSER->getAll(getUserAgentFromLine($line));
             isset($osMap[$browserData['os_name']])
               ? $osMap[$browserData['os_name']]++
@@ -41,17 +40,25 @@
           }
           $clicksPerHour[getHourFromLine($line)]++;
           $request = getRequestFromLine($line);
-          if ($request !== false) isset($fileMap[$request])
-            ? $fileMap[$request]++
-            : $fileMap[$request] = 1;
+          if ($request !== false) {
+            isset($fileMap[$request])
+              ? $fileMap[$request]++
+              : $fileMap[$request] = 1;
+            isset($deviceMap[$ip])
+              ? array_push($deviceMap[$ip], [getTimeFromLine($line), $request])
+              : $deviceMap[$ip] = [[getTimeFromLine($line), $request]];
+          }
         }
       }
       arsort($osMap);
       arsort($browserMap);
       arsort($fileMap);
       array_splice($fileMap, 5);
+      usort($deviceMap, function ($a, $b) {
+        return (count($b) - count($a));
+      });
 
-      echo '<p>Am '.getReadableDate($_GET['j']).' gab es insgesamt '.$clicks.' Aufrufe von '.count($devices).' unterschiedlichen Geräten.</p>';
+      echo '<p>Am '.getReadableDate($_GET['j']).' gab es insgesamt '.$clicks.' Aufrufe von '.count($deviceMap).' unterschiedlichen Geräten.</p>';
     }
   ?>
   <div id="chartTimes" data-title="Klicks pro Stunde" data-type="line"></div>
@@ -60,6 +67,22 @@
     <div id="chartBrowsers" data-title="Genutzte Browser" data-type="bar"></div>
   </div>
   <div id="chartFiles" data-title="Am Häufigsten angefragt" data-type="bar"></div>
+  <h2>Besucher Flow</h2>
+  <p>
+    Unten sehen Sie die Reihenfolge und Uhrzeit der besuchten Seiten für die einzelnen Geräte aufgelistet.
+  </p>
+  <?php
+    $i = 1;
+    foreach ($deviceMap as $user) {
+      echo '<h3>Besucher '.$i.'</h3>';
+      echo '<div class="timeline">';
+      foreach ($user as $flow) {
+        echo '<div><div>'.$flow[1].'</div><small>'.$flow[0].' Uhr</small></div><span class="separator"></span>';
+      }
+      echo '</div>';
+      $i++;
+    }
+  ?>
 </main>
 <script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
 <script>

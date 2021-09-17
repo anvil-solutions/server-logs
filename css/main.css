@@ -55,9 +55,9 @@ h2 {
 }
 h3 {
   font-weight: 400;
-  color: var(--text-color);
+  color: var(--accent-color);
 }
-p, ul, table, label {
+p, ul, table, label, small {
   color: var(--text-color-secondary);
 }
 ul {
@@ -119,6 +119,25 @@ input, button, a, a * {
 .week-grid {
   grid-template-columns: repeat(2, 2fr);
   gap: 16px;
+}
+.timeline {
+  display: flex;
+  gap: 16px 0;
+  flex-wrap: wrap;
+}
+.timeline > div {
+  flex-grow: 1;
+  padding: 16px;
+  border: .1px solid var(--hover-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+}
+.timeline > .separator {
+  width: 24px;
+  background: linear-gradient(transparent 49%, var(--text-color-secondary) 49%, var(--text-color-secondary) 51%, transparent 51%);
+}
+.timeline > :last-child {
+  flex-grow: 100;
 }
 .login {
   max-width: 480px;

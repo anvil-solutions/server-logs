@@ -6,6 +6,7 @@
     $line = strtolower($line);
     return strlen($line) > 0
       && strpos($line, $_SERVER['HTTP_HOST']) === false
+      && strpos($line, 'get') !== false
       && strpos($line, '" 3') === false
       && strpos($line, '" 4') === false
       && strpos($line, '" 5') === false
@@ -23,6 +24,8 @@
       && strpos($line, '.woff2') === false
       && strpos($line, '.mp3') === false
       && strpos($line, '.mp4') === false
+      && strpos($line, '.pdf') === false
+      && strpos($line, '.zip') === false
       && strpos($line, '.env') === false;
   }
 
@@ -51,6 +54,12 @@
 
   function getDateFromLine($line) {
     return substr($line, strpos($line, '[') + 1, 11);
+  }
+
+  function getTimeFromLine($line) {
+    $cut = substr($line, strpos($line, '['));
+    $offset = strpos($cut, ':');
+    return substr($cut, $offset + 1, strpos($cut, ' ') - $offset);
   }
 
   function getHourFromLine($line) {

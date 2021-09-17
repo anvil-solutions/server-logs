@@ -15,9 +15,13 @@ This tool allows you to view and interpret the logged data on your IONOS server 
   - Browsers used
   - Most requested pages
   - User flow
-- Daily data
+- General history
   - Clicks per day
   - Devices per day
+- General data
+  - Operating systems used
+  - Browsers used
+  - Most requested pages
 - General monthly traffic data
 
 ## Libraries Used

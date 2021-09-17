@@ -66,7 +66,7 @@
     <div id="chartOSes" data-title="Genutzte Betriebssysteme" data-type="bar"></div>
     <div id="chartBrowsers" data-title="Genutzte Browser" data-type="bar"></div>
   </div>
-  <div id="chartFiles" data-title="Am Häufigsten angefragt" data-type="bar"></div>
+  <div id="chartFiles" data-title="Am häufigsten angefragt" data-type="bar"></div>
   <h2>Besucher Flow</h2>
   <p>
     Unten sehen Sie die Reihenfolge und Uhrzeit der besuchten Seiten für die einzelnen Geräte aufgelistet.

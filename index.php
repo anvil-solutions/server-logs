@@ -11,12 +11,13 @@
   </p>
   <h2>Heutige Analyse</h2>
   <?php
+    require_once('./src/BrowserDetection.php');
+    $_BROWSER = new foroco\BrowserDetection();
+
     $filename = $DOCUMENT_ROOT.'logs/access.log.current';
     if (is_dir($filename) || !file_exists($filename)) {
       echo '<p>Es wurde kein Zugriffsprotokoll gefunden.</p>';
     } else {
-      require_once('./src/BrowserDetection.php');
-      $_BROWSER = new foroco\BrowserDetection();
       $file = file($filename);
       $clicks = 0;
       $devices = [];
@@ -60,7 +61,7 @@
     <div id="chartOSes" data-title="Genutzte Betriebssysteme" data-type="bar"></div>
     <div id="chartBrowsers" data-title="Genutzte Browser" data-type="bar"></div>
   </div>
-  <div id="chartFiles" data-title="Am Häufigsten angefragt" data-type="bar"></div>
+  <div id="chartFiles" data-title="Am häufigsten angefragt" data-type="bar"></div>
   <?php
     $path = $DOCUMENT_ROOT.'logs';
     $files = array_filter(
@@ -74,6 +75,9 @@
     $dataClicks = [];
     $dataDevices = [];
     $fileDateMap = [];
+    $wholeOsMap = [];
+    $wholeBrowserMap = [];
+    $wholeFileMap = [];
     foreach ($files as $filename) {
       $file = '';
       $resource = gzopen($path.'/'.$filename, 'r');
@@ -98,13 +102,30 @@
           }
           $clicks++;
           $ip = getIpFromLine($line);
-          if (!in_array($ip, $devices)) array_push($devices, $ip);
+          if (!in_array($ip, $devices)) {
+            array_push($devices, $ip);
+            $browserData = $_BROWSER->getAll(getUserAgentFromLine($line));
+            isset($wholeOsMap[$browserData['os_name']])
+              ? $wholeOsMap[$browserData['os_name']]++
+              : $wholeOsMap[$browserData['os_name']] = 1;
+            isset($wholeBrowserMap[$browserData['browser_name']])
+              ? $wholeBrowserMap[$browserData['browser_name']]++
+              : $wholeBrowserMap[$browserData['browser_name']] = 1;
+          }
+          $request = getRequestFromLine($line);
+          if ($request !== false) isset($wholeFileMap[$request])
+            ? $wholeFileMap[$request]++
+            : $wholeFileMap[$request] = 1;
         }
       }
       array_push($labels, $currentDate);
       array_push($dataClicks, $clicks);
       array_push($dataDevices, count($devices));
       array_push($fileDateMap[$filename], $currentDate);
+      arsort($wholeOsMap);
+      arsort($wholeBrowserMap);
+      arsort($wholeFileMap);
+      array_splice($wholeFileMap, 5);
     }
   ?>
   <h2>Detailansicht</h2>
@@ -124,6 +145,15 @@
   </p>
   <div id="chartClicks" data-title="Klicks pro Tag" data-type="line"></div>
   <div id="chartDevices" data-title="Geräte pro Tag" data-type="line"></div>
+  <h2>Gesamtdaten</h2>
+  <p>
+    Unten sehen Sie aufgezeichnete Daten für die gesamte Zeitspanne.
+  </p>
+  <div class="res-grid">
+    <div id="chartOSesWhole" data-title="Genutzte Betriebssysteme" data-type="percentage"></div>
+    <div id="chartBrowsersWhole" data-title="Genutzte Browser" data-type="percentage"></div>
+  </div>
+  <div id="chartFilesWhole" data-title="Am häufigsten angefragt" data-type="bar"></div>
   <h2>Monatliche Analyse</h2>
   <p>
     Unten sehen Sie eine Tabelle mit Aufrufszahlen und Menge der transferierten Daten in den einzelnen Monaten des laufenden Jahres.
@@ -149,6 +179,7 @@
     <div>
       <h2>Umwandlungstabelle</h2>
       <p>
+        1 Byte = 8 Bit<br>
         1 kB = 1000 Bytes<br>
         1 MB = 1000 kB<br>
         1 GB = 1000 MB
@@ -172,6 +203,9 @@
     echo 'const dataFiles = { labels: '.json_encode(array_keys($fileMap)).', datasets: [{ values: '.json_encode(array_values($fileMap)).'}] };';
     echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataClicks).'}], yMarkers: [{ label: "Durchschnitt", value: '.(array_sum($dataClicks) / count($dataClicks)).' }] };';
     echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataDevices).'}], yMarkers: [{ label: "Durchschnitt", value: '.(array_sum($dataDevices) / count($dataDevices)).' }] };';
+    echo 'const dataWholeOSes = { labels: '.json_encode(array_keys($wholeOsMap)).', datasets: [{ values: '.json_encode(array_values($wholeOsMap)).'}] };';
+    echo 'const dataWholeBrowsers = { labels: '.json_encode(array_keys($wholeBrowserMap)).', datasets: [{ values: '.json_encode(array_values($wholeBrowserMap)).'}] };';
+    echo 'const dataWholeFiles = { labels: '.json_encode(array_keys($wholeFileMap)).', datasets: [{ values: '.json_encode(array_values($wholeFileMap)).'}] };';
   ?>
   function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
     const dataset = document.querySelector(id).dataset;
@@ -205,6 +239,11 @@
   initChart('#chartDevices', dataDevices, {
     formatTooltipY: d => d + ' Geräte'
   }, { xIsSeries: true });
+  initChart('#chartOSesWhole', dataWholeOSes);
+  initChart('#chartBrowsersWhole', dataWholeBrowsers);
+  initChart('#chartFilesWhole', dataWholeFiles, {
+    formatTooltipY: d => d + ' Klicks'
+  }, { xAxisMode: 'tick' });
 
   const regionConverter = new Intl.DisplayNames(['de'], { type: 'region' });
   const dataLoading = { labels: ['Lädt', ''], datasets: [{ values: [1, 0] }] };

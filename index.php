@@ -167,10 +167,14 @@
     } else {
       $doc = new DOMDocument();
       $doc->loadHTML(implode('', file($filename)));
+
+      $table = $doc->saveHTML($doc->getElementsByTagName('table')->item(0));
+      for ($i = 0; $i < 2; $i++) $table = preg_replace('/<(?:td|th)[^>]*>.*?<\/(?:td|th)>\s+<\/tr>/i', '</tr>', $table);
+
       echo str_replace(
         'Megabytes',
         'MB',
-        preg_replace('#<a.*?>(.*?)</a>#i', '\1', $doc->saveHTML($doc->getElementsByTagName('table')->item(0)))
+        preg_replace('#<a.*?>(.*?)</a>#i', '\1', $table)
       );
     }
   ?>

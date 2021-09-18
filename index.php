@@ -56,8 +56,6 @@
   ?>
   <div id="chartTimes" data-title="Klicks pro Stunde" data-type="line"></div>
   <div class="res-grid">
-    <div id="chartCountryClicks" data-title="Klicks pro Land" data-type="bar"></div>
-    <div id="chartCountryDevices" data-title="Geräte pro Land" data-type="bar"></div>
     <div id="chartOSes" data-title="Genutzte Betriebssysteme" data-type="bar"></div>
     <div id="chartBrowsers" data-title="Genutzte Browser" data-type="bar"></div>
   </div>
@@ -259,23 +257,4 @@
       return 'Unbekannt';
     }
   }
-  const countryClickChart = initChart('#chartCountryClicks', dataLoading, {
-    formatTooltipX: convertRegion,
-    formatTooltipY: d => d + ' Klicks'
-  }, { xAxisMode: 'tick' });
-  const countryDeviceChart = initChart('#chartCountryDevices', dataLoading, {
-    formatTooltipX: convertRegion,
-    formatTooltipY: d => d + ' Geräte'
-  }, { xAxisMode: 'tick' });
-
-  fetch('./locations.json')
-    .then(response => response.json())
-    .then(data => {
-      countryClickChart.update(data[0]);
-      countryDeviceChart.update(data[1]);
-    })
-    .catch(() => {
-      countryClickChart.update(dataError);
-      countryDeviceChart.update(dataError);
-    });
 </script>

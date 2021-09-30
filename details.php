@@ -9,8 +9,9 @@
   <h2>Übersicht für den <?php echo getReadableDate($_GET['j']); ?></h2>
   <?php
     $filename = $DOCUMENT_ROOT.'logs/'.$_GET['i'];
-    if (is_dir($filename) || !file_exists($filename) || $_GET['j'] === '0') {
+    if (is_dir($filename) || !file_exists($filename) || $_GET['j'] === '0' || strpos($filename, '..') !== false) {
       echo '<p>Es wurde kein Zugriffsprotokoll gefunden.</p>';
+      exit;
     } else {
       require_once('./src/BrowserDetection.php');
       $_BROWSER = new foroco\BrowserDetection();

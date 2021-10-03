@@ -120,11 +120,11 @@
       array_push($dataClicks, $clicks);
       array_push($dataDevices, count($devices));
       array_push($fileDateMap[$filename], $currentDate);
-      arsort($wholeOsMap);
-      arsort($wholeBrowserMap);
-      arsort($wholeFileMap);
-      array_splice($wholeFileMap, 5);
     }
+    arsort($wholeOsMap);
+    arsort($wholeBrowserMap);
+    arsort($wholeFileMap);
+    array_splice($wholeFileMap, 5);
   ?>
   <h2>Detailansicht</h2>
   <p>Klicken Sie auf die einzelnen Tage um eine Detailansicht des jeweiligen Datums zu erhalten.</p>

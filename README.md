@@ -11,6 +11,10 @@ This tool allows you to view and interpret the logged data on your IONOS server 
   - Clicks per hour
   - Operating systems used
   - Browsers used
+  - Session lengths
+  - Session page request count
+  - Entry pages
+  - Exit pages
   - Most requested pages
   - User flow
 - General history

@@ -59,7 +59,23 @@
         return (count($b) - count($a));
       });
 
-      echo '<p>Am '.getReadableDate($_GET['j']).' gab es insgesamt '.$clicks.' Aufrufe von '.count($deviceMap).' unterschiedlichen Geräten.</p>';
+      $sessionData = [];
+      foreach ($deviceMap as $key => $user) {
+        array_push($sessionData, []);
+        array_push($sessionData[$key], strtotime(array_slice($user, -1)[0][0]) - strtotime($user[0][0]));
+        array_push($sessionData[$key], count($user));
+        array_push($sessionData[$key], $user[0][1]);
+        array_push($sessionData[$key], array_slice($user, -1)[0][1]);
+      }
+
+      $entryMap = array_count_values(array_column($sessionData, 2));
+      $exitMap = array_count_values(array_column($sessionData, 3));
+      arsort($entryMap);
+      arsort($exitMap);
+      array_splice($entryMap, 5);
+      array_splice($exitMap, 5);
+
+      echo '<p>Am '.getReadableDate($_GET['j']).' gab es insgesamt '.$clicks.' Aufrufe von '.count($deviceMap).' unterschiedlichen Geräten. Die folgenden Graphen zeigen Ihnen den zeitlichen Verlauf und Geräteinformationen.</p>';
     }
   ?>
   <div id="chartTimes" data-title="Klicks pro Stunde" data-type="line"></div>
@@ -67,15 +83,32 @@
     <div id="chartOSes" data-title="Genutzte Betriebssysteme" data-type="bar"></div>
     <div id="chartBrowsers" data-title="Genutzte Browser" data-type="bar"></div>
   </div>
+  <h2>Sitzungen</h2>
+  <p>
+    Der folgende Abschnitt beschäftigt sich mit den anonym aufgezeichneten Sitzungen.
+    Zu Sehen sind die am häufigsten aufgerufenen Seiten, sowie die beliebtesten Einstiegs- und Ausstiegsseiten.
+    <?php
+      $datasetSize = count($sessionData);
+      echo 'Die durchschnittliche Sitzungsdauer beträgt '
+        .gmdate("H:i:s", array_sum(array_column($sessionData, 0)) / $datasetSize).' mit '
+        .round(array_sum(array_column($sessionData, 1)) / $datasetSize, 2).' Aufrufen.';
+    ?>
+  </p>
+  <div class="res-grid">
+    <div id="chartEntry" data-title="Einstiegsseiten" data-type="bar"></div>
+    <div id="chartExit" data-title="Ausstiegsseiten" data-type="bar"></div>
+  </div>
   <div id="chartFiles" data-title="Am häufigsten angefragt" data-type="bar"></div>
   <h2>Besucher Flow</h2>
   <p>
-    Unten sehen Sie die Reihenfolge und Uhrzeit der besuchten Seiten für die einzelnen Geräte aufgelistet.
+    Es folgt eine genauere aufschlüsselung der einzelnen Sitzungen.
+    Sie sehen allgemeine Informationen zur Sitzung als auch die Reihenfolge und Uhrzeit der besuchten Seiten.
   </p>
   <?php
     $i = 1;
-    foreach ($deviceMap as $user) {
-      echo '<h3>Besucher '.$i.'</h3>';
+    foreach ($deviceMap as $key => $user) {
+      echo '<h3>Sitzung '.$i.'</h3>';
+      echo '<p>Sitzungsdauer: '.gmdate("H:i:s", $sessionData[$key][0]).'<br>Seitenaufrufe: '.$sessionData[$key][1].'</p>';
       echo '<div class="timeline">';
       foreach ($user as $flow) {
         echo '<div><div>'.$flow[1].'</div><small>'.$flow[0].' Uhr</small></div><span class="separator"></span>';
@@ -91,6 +124,8 @@
     echo 'const dataTimes = { labels: '.json_encode(array_keys($clicksPerHour)).', datasets: [{ values: '.json_encode(array_values($clicksPerHour)).'}], yMarkers: [{ label: "Durchschnitt", value: '.(array_sum($clicksPerHour) / count($clicksPerHour)).' }] };';
     echo 'const dataOSes = { labels: '.json_encode(array_keys($osMap)).', datasets: [{ values: '.json_encode(array_values($osMap)).'}] };';
     echo 'const dataBrowsers = { labels: '.json_encode(array_keys($browserMap)).', datasets: [{ values: '.json_encode(array_values($browserMap)).'}] };';
+    echo 'const dataEntry = { labels: '.json_encode(array_keys($entryMap)).', datasets: [{ values: '.json_encode(array_values($entryMap)).'}] };';
+    echo 'const dataExit = { labels: '.json_encode(array_keys($exitMap)).', datasets: [{ values: '.json_encode(array_values($exitMap)).'}] };';
     echo 'const dataFiles = { labels: '.json_encode(array_keys($fileMap)).', datasets: [{ values: '.json_encode(array_values($fileMap)).'}] };';
   ?>
   function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
@@ -116,6 +151,8 @@
   initChart('#chartBrowsers', dataBrowsers, {
     formatTooltipY: d => d + ' Geräte'
   }, { xAxisMode: 'tick' });
+  initChart('#chartEntry', dataEntry, {}, { xAxisMode: 'tick' });
+  initChart('#chartExit', dataExit, {}, { xAxisMode: 'tick' });
   initChart('#chartFiles', dataFiles, {
     formatTooltipY: d => d + ' Klicks'
   }, { xAxisMode: 'tick' });

@@ -101,7 +101,7 @@
   <div id="chartFiles" data-title="Am häufigsten angefragt" data-type="bar"></div>
   <h2>Besucher Flow</h2>
   <p>
-    Es folgt eine genauere aufschlüsselung der einzelnen Sitzungen.
+    Es folgt eine genauere Aufschlüsselung der einzelnen Sitzungen.
     Sie sehen allgemeine Informationen zur Sitzung als auch die Reihenfolge und Uhrzeit der besuchten Seiten.
   </p>
   <?php

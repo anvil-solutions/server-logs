@@ -13,6 +13,7 @@ This tool allows you to view and interpret the logged data on your IONOS server 
   - Browsers used
   - Session lengths
   - Session page request count
+  - Bounce rate
   - Entry pages
   - Exit pages
   - Most requested pages

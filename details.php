@@ -70,12 +70,14 @@
       });
 
       $sessionData = [];
+      $bouncedSessions = 0;
       foreach ($deviceMap as $key => $user) {
         array_push($sessionData, []);
         array_push($sessionData[$key], strtotime(array_slice($user, -1)[0][0]) - strtotime($user[0][0]));
         array_push($sessionData[$key], count($user));
         array_push($sessionData[$key], $user[0][1]);
         array_push($sessionData[$key], array_slice($user, -1)[0][1]);
+        if (count($user) == 1) $bouncedSessions++;
       }
 
       $entryMap = array_count_values(array_column($sessionData, 2));
@@ -101,7 +103,8 @@
       $datasetSize = count($sessionData);
       echo 'Die durchschnittliche Sitzungsdauer beträgt '
         .gmdate("H:i:s", array_sum(array_column($sessionData, 0)) / $datasetSize).' mit '
-        .round(array_sum(array_column($sessionData, 1)) / $datasetSize, 2).' Aufrufen.';
+        .round(array_sum(array_column($sessionData, 1)) / $datasetSize, 2).' Aufrufen. ';
+      echo 'Die Absprungrate beträgt '.round($bouncedSessions / $datasetSize * 100).'%.';
     ?>
   </p>
   <div class="res-grid">

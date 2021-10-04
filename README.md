@@ -4,8 +4,6 @@ This tool allows you to view and interpret the logged data on your IONOS server 
 ## Features
 - Today's data
   - Clicks per hour
-  - Operating systems used
-  - Browsers used
   - Most requested pages
 - Detailed daily data
   - Clicks per hour

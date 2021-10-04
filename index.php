@@ -9,7 +9,7 @@
     Mit Schließen des Browsers werden Sie automatisch abgemeldet.
     Zuletzt aktualisiert: <?php echo date('H:i:s'); ?> Uhr.
   </p>
-  <h2>Heutige Analyse</h2>
+  <h2>Heutige Schnellanalyse</h2>
   <?php
     require_once('./src/BrowserDetection.php');
     $_BROWSER = new foroco\BrowserDetection();
@@ -22,8 +22,6 @@
       $clicks = 0;
       $devices = [];
       $clicksPerHour = array_fill(0, (int)date('G') + 1, 0);
-      $osMap = [];
-      $browserMap = [];
       $fileMap = [];
       foreach ($file as $line) {
         if (isRelevantEntry($line)) {
@@ -31,13 +29,6 @@
           $ip = getIpFromLine($line);
           if (!in_array($ip, $devices)) {
             array_push($devices, $ip);
-            $browserData = $_BROWSER->getAll(getUserAgentFromLine($line));
-            isset($osMap[$browserData['os_name']])
-              ? $osMap[$browserData['os_name']]++
-              : $osMap[$browserData['os_name']] = 1;
-            isset($browserMap[$browserData['browser_name']])
-              ? $browserMap[$browserData['browser_name']]++
-              : $browserMap[$browserData['browser_name']] = 1;
           }
           $clicksPerHour[getHourFromLine($line)]++;
         	$request = getRequestFromLine($line);
@@ -46,8 +37,6 @@
             : $fileMap[$request] = 1;
         }
       }
-      arsort($osMap);
-      arsort($browserMap);
       arsort($fileMap);
       array_splice($fileMap, 5);
 
@@ -55,10 +44,6 @@
     }
   ?>
   <div id="chartTimes" data-title="Klicks pro Stunde" data-type="line"></div>
-  <div class="res-grid">
-    <div id="chartOSes" data-title="Genutzte Betriebssysteme" data-type="bar"></div>
-    <div id="chartBrowsers" data-title="Genutzte Browser" data-type="bar"></div>
-  </div>
   <div id="chartFiles" data-title="Am häufigsten angefragt" data-type="bar"></div>
   <?php
     $path = $DOCUMENT_ROOT.'logs';
@@ -141,6 +126,8 @@
   </p>
   <div class="week-grid">
     <?php
+      $today = date('d/M/Y');
+      echo '<a href="./details?i=access.log.current&j='.$today.'">'.$today.'</a>';
       foreach (array_reverse($fileDateMap) as $key => $file) {
         foreach (array_reverse($file) as $date) {
           echo '<a href="./details?i='.$key.'&j='.$date.'">'.$date.'</a>';
@@ -185,11 +172,11 @@
       $doc->loadHTML(implode('', file($filename)));
 
       $table = $doc->saveHTML($doc->getElementsByTagName('table')->item(0));
-      for ($i = 0; $i < 2; $i++) $table = preg_replace('/<(?:td|th)[^>]*>.*?<\/(?:td|th)>\s+<\/tr>/i', '</tr>', $table);
+      for ($i = 0; $i < 3; $i++) $table = preg_replace('/<(?:td|th)[^>]*>.*?<\/(?:td|th)>\s+<\/tr>/i', '</tr>', $table);
 
       echo str_replace(
-        'Megabytes',
-        'MB',
+        'Zugriffe',
+        'Aufrufe',
         preg_replace('#<a.*?>(.*?)</a>#i', '\1', $table)
       );
     }
@@ -218,8 +205,6 @@
 <script>
   <?php
     echo 'const dataTimes = { labels: '.json_encode(array_keys($clicksPerHour)).', datasets: [{ values: '.json_encode(array_values($clicksPerHour)).'}], yMarkers: [{ label: "Durchschnitt", value: '.(array_sum($clicksPerHour) / count($clicksPerHour)).' }] };';
-    echo 'const dataOSes = { labels: '.json_encode(array_keys($osMap)).', datasets: [{ values: '.json_encode(array_values($osMap)).'}] };';
-    echo 'const dataBrowsers = { labels: '.json_encode(array_keys($browserMap)).', datasets: [{ values: '.json_encode(array_values($browserMap)).'}] };';
     echo 'const dataFiles = { labels: '.json_encode(array_keys($fileMap)).', datasets: [{ values: '.json_encode(array_values($fileMap)).'}] };';
     echo 'const dataClicks = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataClicks).'}], yMarkers: [{ label: "Durchschnitt", value: '.$wholeAverageClicks.' }] };';
     echo 'const dataDevices = { labels: '.json_encode($labels).', datasets: [{ values: '.json_encode($dataDevices).'}], yMarkers: [{ label: "Durchschnitt", value: '.$wholeAverageDevices.' }] };';
@@ -245,12 +230,6 @@
     formatTooltipX: d => d + ' Uhr',
     formatTooltipY: d => d + ' Klicks'
   });
-  initChart('#chartOSes', dataOSes, {
-    formatTooltipY: d => d + ' Geräte'
-  }, { xAxisMode: 'tick' });
-  initChart('#chartBrowsers', dataBrowsers, {
-    formatTooltipY: d => d + ' Geräte'
-  }, { xAxisMode: 'tick' });
   initChart('#chartFiles', dataFiles, {
     formatTooltipY: d => d + ' Klicks'
   }, { xAxisMode: 'tick' });

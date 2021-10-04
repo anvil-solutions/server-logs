@@ -9,7 +9,13 @@
   <h2>Übersicht für den <?php echo getReadableDate($_GET['j']); ?></h2>
   <?php
     $filename = $DOCUMENT_ROOT.'logs/'.$_GET['i'];
-    if (is_dir($filename) || !file_exists($filename) || $_GET['j'] === '0' || strpos($filename, '..') !== false) {
+    if (
+      is_dir($filename)
+      || !file_exists($filename)
+      || strpos($filename, '..') !== false
+      || strpos($filename, 'access.log') === false
+      || preg_match('/^(([1-9])|([0][1-9])|([1-2][0-9])|([3][0-1]))\/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\/\d{4}$/', $_GET['j']) === 0
+    ) {
       echo '<p>Es wurde kein Zugriffsprotokoll gefunden.</p>';
       exit;
     } else {
@@ -77,7 +83,7 @@
         array_push($sessionData[$key], count($user));
         array_push($sessionData[$key], $user[0][1]);
         array_push($sessionData[$key], array_slice($user, -1)[0][1]);
-        if (count($user) == 1) $bouncedSessions++;
+        if (count($user) === 1) $bouncedSessions++;
       }
 
       $entryMap = array_count_values(array_column($sessionData, 2));

@@ -175,8 +175,8 @@
       for ($i = 0; $i < 3; $i++) $table = preg_replace('/<(?:td|th)[^>]*>.*?<\/(?:td|th)>\s+<\/tr>/i', '</tr>', $table);
 
       echo str_replace(
-        'Zugriffe',
-        'Aufrufe',
+        ['Megabytes', 'Zugriffe'],
+        ['MB', 'Aufrufe'],
         preg_replace('#<a.*?>(.*?)</a>#i', '\1', $table)
       );
     }

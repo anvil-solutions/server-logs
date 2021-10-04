@@ -107,10 +107,12 @@
     Zu Sehen sind die am häufigsten aufgerufenen Seiten, sowie die beliebtesten Einstiegs- und Ausstiegsseiten.
     <?php
       $datasetSize = count($sessionData);
-      echo 'Die durchschnittliche Sitzungsdauer beträgt '
-        .gmdate("H:i:s", array_sum(array_column($sessionData, 0)) / $datasetSize).' mit '
-        .round(array_sum(array_column($sessionData, 1)) / $datasetSize, 2).' Aufrufen. ';
-      echo 'Die Absprungrate beträgt '.round($bouncedSessions / $datasetSize * 100).'%.';
+      if ($datasetSize > 0) {
+        echo 'Die durchschnittliche Sitzungsdauer beträgt '
+          .gmdate("H:i:s", array_sum(array_column($sessionData, 0)) / $datasetSize).' mit '
+          .round(array_sum(array_column($sessionData, 1)) / $datasetSize, 2).' Aufrufen. ';
+        echo 'Die Absprungrate beträgt '.round($bouncedSessions / $datasetSize * 100).'%.';
+      }
     ?>
   </p>
   <div class="res-grid">

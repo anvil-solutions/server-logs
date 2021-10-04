@@ -26,35 +26,45 @@
       $osMap = [];
       $browserMap = [];
       $fileMap = [];
+      $errorMap = [];
       foreach ($file as $line) {
-        if (getDateFromLine($line) === $_GET['j'] && isRelevantEntry($line)) {
-          $clicks++;
-          $ip = getIpFromLine($line);
-          if (!isset($deviceMap[$ip])) {
-            $browserData = $_BROWSER->getAll(getUserAgentFromLine($line));
-            isset($osMap[$browserData['os_name']])
-              ? $osMap[$browserData['os_name']]++
-              : $osMap[$browserData['os_name']] = 1;
-            isset($browserMap[$browserData['browser_name']])
-              ? $browserMap[$browserData['browser_name']]++
-              : $browserMap[$browserData['browser_name']] = 1;
-          }
-          $clicksPerHour[getHourFromLine($line)]++;
-          $request = getRequestFromLine($line);
-          if ($request !== false) {
-            isset($fileMap[$request])
-              ? $fileMap[$request]++
-              : $fileMap[$request] = 1;
-            isset($deviceMap[$ip])
-              ? array_push($deviceMap[$ip], [getTimeFromLine($line), $request])
-              : $deviceMap[$ip] = [[getTimeFromLine($line), $request]];
+        if (getDateFromLine($line) === $_GET['j']) {
+          if (isRelevantEntry($line)) {
+            $clicks++;
+            $ip = getIpFromLine($line);
+            if (!isset($deviceMap[$ip])) {
+              $browserData = $_BROWSER->getAll(getUserAgentFromLine($line));
+              isset($osMap[$browserData['os_name']])
+                ? $osMap[$browserData['os_name']]++
+                : $osMap[$browserData['os_name']] = 1;
+              isset($browserMap[$browserData['browser_name']])
+                ? $browserMap[$browserData['browser_name']]++
+                : $browserMap[$browserData['browser_name']] = 1;
+            }
+            $clicksPerHour[getHourFromLine($line)]++;
+            $request = getRequestFromLine($line);
+            if ($request !== false) {
+              isset($fileMap[$request])
+                ? $fileMap[$request]++
+                : $fileMap[$request] = 1;
+              isset($deviceMap[$ip])
+                ? array_push($deviceMap[$ip], [getTimeFromLine($line), $request])
+                : $deviceMap[$ip] = [[getTimeFromLine($line), $request]];
+            }
+          } else if (isError($line)) {
+            $request = getRequestFromLine($line);
+            if ($request !== false) isset($errorMap[$request])
+                ? $errorMap[$request]++
+                : $errorMap[$request] = 1;
           }
         }
       }
       arsort($osMap);
       arsort($browserMap);
       arsort($fileMap);
+      arsort($errorMap);
       array_splice($fileMap, 5);
+      array_splice($errorMap, 5);
       usort($deviceMap, function ($a, $b) {
         return (count($b) - count($a));
       });
@@ -99,6 +109,7 @@
     <div id="chartExit" data-title="Ausstiegsseiten" data-type="bar"></div>
   </div>
   <div id="chartFiles" data-title="Am häufigsten angefragt" data-type="bar"></div>
+  <div id="chartErrors" data-title="Fehlerseiten" data-type="bar"></div>
   <h2>Besucher Flow</h2>
   <p>
     Es folgt eine genauere Aufschlüsselung der einzelnen Sitzungen.
@@ -127,6 +138,7 @@
     echo 'const dataEntry = { labels: '.json_encode(array_keys($entryMap)).', datasets: [{ values: '.json_encode(array_values($entryMap)).'}] };';
     echo 'const dataExit = { labels: '.json_encode(array_keys($exitMap)).', datasets: [{ values: '.json_encode(array_values($exitMap)).'}] };';
     echo 'const dataFiles = { labels: '.json_encode(array_keys($fileMap)).', datasets: [{ values: '.json_encode(array_values($fileMap)).'}] };';
+    echo 'const dataErrors = { labels: '.json_encode(array_keys($errorMap)).', datasets: [{ values: '.json_encode(array_values($errorMap)).'}] };';
   ?>
   function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
     const dataset = document.querySelector(id).dataset;
@@ -154,6 +166,9 @@
   initChart('#chartEntry', dataEntry, {}, { xAxisMode: 'tick' });
   initChart('#chartExit', dataExit, {}, { xAxisMode: 'tick' });
   initChart('#chartFiles', dataFiles, {
+    formatTooltipY: d => d + ' Klicks'
+  }, { xAxisMode: 'tick' });
+  initChart('#chartErrors', dataErrors, {
     formatTooltipY: d => d + ' Klicks'
   }, { xAxisMode: 'tick' });
 </script>

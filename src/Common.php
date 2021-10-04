@@ -7,9 +7,7 @@
     return strlen($line) > 0
       && strpos($line, $_SERVER['HTTP_HOST']) === false
       && strpos($line, 'get') !== false
-      && strpos($line, '" 3') === false
-      && strpos($line, '" 4') === false
-      && strpos($line, '" 5') === false
+      && strpos($line, '" 2') !== false
       && strpos($line, '.js') === false
       && strpos($line, '.css') === false
       && strpos($line, '.json') === false
@@ -29,11 +27,12 @@
       && strpos($line, '.env') === false;
   }
 
-  function getRelevantEntries($array) {
-    return array_filter(
-      $array,
-      'isRelevantEntry'
-    );
+  function isError($line) {
+    $line = strtolower($line);
+    return strlen($line) > 0
+      && strpos($line, $_SERVER['HTTP_HOST']) === false
+      && strpos($line, 'get') !== false
+      && strpos($line, '" 4') !== false;
   }
 
   function getIpFromLine($line) {

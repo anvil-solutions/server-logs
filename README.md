@@ -16,6 +16,7 @@ This tool allows you to view and interpret the logged data on your IONOS server 
   - Entry pages
   - Exit pages
   - Most requested pages
+  - Error pages
   - User flow
 - General history
   - Clicks per day
@@ -24,6 +25,7 @@ This tool allows you to view and interpret the logged data on your IONOS server 
   - Operating systems used
   - Browsers used
   - Most requested pages
+  - Error pages
 - General monthly traffic data
 
 ## Libraries Used

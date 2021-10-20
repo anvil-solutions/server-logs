@@ -20,8 +20,6 @@
         $settings->passwordHash = password_hash($_POST['newPassword'], PASSWORD_DEFAULT);
         file_put_contents(__DIR__.'/settings.json', json_encode($settings));
         $_SESSION['loggedIn'] = $_SERVER['HTTP_USER_AGENT'];
-      } else {
-        echo '<!--false-->';
       }
     }
   }

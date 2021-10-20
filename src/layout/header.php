@@ -17,8 +17,7 @@
     if ($loggedIn === false) {
       if ($newUser) {
         include('first.html');
-      }
-      else if (isset($_SESSION['trys']) && $_SESSION['trys'] > 5) {
+      } else if (isset($_SESSION['trys']) && $_SESSION['trys'] > 5) {
         http_response_code(418);
         include('locked.html');
       } else {

@@ -1,6 +1,7 @@
 <?php
   error_reporting(E_ALL);
-  session_name('SESSION');
+  session_set_cookie_params(0, '/', null, true, true);
+  session_name('SESSION_LOGS');
   session_start();
   $settings = json_decode(file_get_contents(__DIR__.'/settings.json'));
   $newUser = true;

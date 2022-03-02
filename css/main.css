@@ -142,15 +142,15 @@ input, button, a, a * {
 .login {
   max-width: 480px;
 }
-.login label {
-  display: grid;
-  grid-template-columns: 35% auto;
-  align-items: center;
-  gap: 16px;
-  margin: 0 0 16px;
+form {
+  display: flex;
 }
-.login input[type=password] {
+form > .btn {
+  margin: 0 0 0 8px;
+}
+form > input[type=password] {
   display: inline-block;
+  flex: 1;
   padding: 8px 16px;
   background: #fff;
   color: var(--text-color);
@@ -161,12 +161,6 @@ input, button, a, a * {
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
   outline: 0;
-}
-.login .btnContainer {
-  display: flex;
-}
-.login .btn {
-  margin: 0 0 0 auto;
 }
 @media screen and (min-width: 1080px) {
   .res-grid {

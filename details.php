@@ -27,6 +27,7 @@
       gzclose($resource);
       $file = explode(PHP_EOL, $file);
       $clicks = 0;
+      $userMap = [];
       $deviceMap = [];
       $clicksPerHour = array_fill(0, 24, 0);
       $osMap = [];
@@ -46,6 +47,7 @@
               isset($browserMap[$browserData['browser_name']])
                 ? $browserMap[$browserData['browser_name']]++
                 : $browserMap[$browserData['browser_name']] = 1;
+              $userMap[$ip] = [$browserData['os_name'], $browserData['browser_name']];
             }
             $clicksPerHour[getHourFromLine($line)]++;
             $request = getRequestFromLine($line);
@@ -71,14 +73,14 @@
       arsort($errorMap);
       array_splice($fileMap, 5);
       array_splice($errorMap, 5);
-      usort($deviceMap, function ($a, $b) {
+      uasort($deviceMap, function ($a, $b) {
         return (count($b) - count($a));
       });
 
       $sessionData = [];
       $bouncedSessions = 0;
       foreach ($deviceMap as $key => $user) {
-        array_push($sessionData, []);
+        $sessionData[$key] = [];
         array_push($sessionData[$key], strtotime(array_slice($user, -1)[0][0]) - strtotime($user[0][0]));
         array_push($sessionData[$key], count($user));
         array_push($sessionData[$key], $user[0][1]);
@@ -130,7 +132,10 @@
     $i = 1;
     foreach ($deviceMap as $key => $user) {
       echo '<h3>Sitzung '.$i.'</h3>';
-      echo '<p>Sitzungsdauer: '.gmdate("H:i:s", $sessionData[$key][0]).'<br>Seitenaufrufe: '.$sessionData[$key][1].'</p>';
+      echo '<p>Sitzungsdauer: '.gmdate("H:i:s", $sessionData[$key][0]).'<br>'.
+        'Seitenaufrufe: '.$sessionData[$key][1].'<br>'.
+        'Betriebssystem: '.$userMap[$key][0].'<br>'.
+        'Browser: '.$userMap[$key][1].'</p>';
       echo '<div class="timeline">';
       foreach ($user as $flow) {
         echo '<div><div>'.$flow[1].'</div><small>'.$flow[0].' Uhr</small></div><span class="separator"></span>';

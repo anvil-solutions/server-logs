@@ -56,8 +56,8 @@
                 ? $fileMap[$request]++
                 : $fileMap[$request] = 1;
               isset($deviceMap[$ip]['requests'])
-                ? array_push($deviceMap[$ip]['requests'], [getTimeFromLine($line), $request])
-                : $deviceMap[$ip]['requests'] = [[getTimeFromLine($line), $request]];
+                ? array_push($deviceMap[$ip]['requests'], [getTimeFromLine($line), $request, getHostFromLine($line)])
+                : $deviceMap[$ip]['requests'] = [[getTimeFromLine($line), $request, getHostFromLine($line)]];
             }
           } else if (isError($line)) {
             $request = getRequestFromLine($line);
@@ -138,7 +138,7 @@
         'Browser: '.$deviceMap[$key]['browser'].'</p>';
       echo '<div class="timeline">';
       foreach ($user['requests'] as $flow) {
-        echo '<div><div>'.$flow[1].'</div><small>'.$flow[0].' Uhr</small></div><span class="separator"></span>';
+        echo '<div><div>'.$flow[1].'</div><div><small>'.$flow[2].'</small></div><div><small>'.$flow[0].' Uhr</small></div></div><span class="separator"></span>';
       }
       echo '</div>';
       $i++;

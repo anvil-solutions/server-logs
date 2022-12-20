@@ -39,6 +39,12 @@
     return substr($line, 0, strpos($line, ' '));
   }
 
+  function getHostFromLine(string $line) : string {
+    $shortLine = substr($line, strposX($line, '"', 2));
+    $offset = strposX($shortLine, ' ', 3) + 1;
+    return substr($shortLine, $offset, strposX($shortLine, ' ', 4) - $offset);
+  }
+
   function getRequestFromLine(string $line) : string {
     $offset = strpos($line, '"GET ');
     if ($offset === false) return false;

@@ -1,8 +1,8 @@
 <?php
   $pageTitle = 'Details';
   require_once('./src/layout/header.php');
-  if (!isset($_GET['i'])) $_GET['i'] = '0';
-  if (!isset($_GET['j'])) $_GET['j'] = '0';
+  if (!isset($_GET['i'])) $_GET['i'] = '';
+  if (!isset($_GET['j'])) $_GET['j'] = '';
 ?>
 <main>
   <a href="./">← Zurück zur Startseite</a>

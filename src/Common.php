@@ -41,7 +41,7 @@
   }
 
   function getIpFromLine(string $line): string {
-    return substr($line, 0, strpos($line, ' '));
+    return hash('xxh3', substr($line, 0, strpos($line, ' ')));
   }
 
   function getHostFromLine(string $line): string {

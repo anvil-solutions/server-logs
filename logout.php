@@ -1,4 +1,5 @@
 <?php
+
   $pageTitle = 'Abgemeldet';
   require_once('./src/layout/header.php');
   $_SESSION['loggedIn'] = '';

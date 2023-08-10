@@ -1,4 +1,5 @@
 <?php
+
   error_reporting(E_ALL);
   session_set_cookie_params(0, '/', null, true, true);
   session_name('SESSION_LOGS');

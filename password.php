@@ -1,4 +1,5 @@
 <?php
+
   $pageTitle = 'Passwort Ändern';
   require_once('./src/layout/header.php');
   if (isset($_POST['password']) && isset($_POST['newPassword']) && isset($_POST['newPasswordRepeat'])) {

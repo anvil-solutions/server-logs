@@ -1,8 +1,13 @@
 <?php
-  // Workaround for domains not connected to ~/
-  $DOCUMENT_ROOT = preg_replace('=^([/a-z0-9]+/htdocs/).*$=','\1',getenv('DOCUMENT_ROOT'));
 
-  function isRelevantEntry(string $line) : bool {
+  // Workaround for domains not connected to ~/
+  $DOCUMENT_ROOT = preg_replace(
+    '=^([/a-z0-9]+/htdocs/).*$=',
+    '\1',
+    getenv('DOCUMENT_ROOT')
+  );
+
+  function isRelevantEntry(string $line): bool {
     $line = strtolower($line);
     return strlen($line) > 0
       && strpos($line, $_SERVER['HTTP_HOST']) === false
@@ -27,7 +32,7 @@
       && strpos($line, '.env') === false;
   }
 
-  function isError(string $line) : bool {
+  function isError(string $line): bool {
     $line = strtolower($line);
     return strlen($line) > 0
       && strpos($line, $_SERVER['HTTP_HOST']) === false
@@ -35,44 +40,48 @@
       && strpos($line, '" 4') !== false;
   }
 
-  function getIpFromLine(string $line) : string {
+  function getIpFromLine(string $line): string {
     return substr($line, 0, strpos($line, ' '));
   }
 
-  function getHostFromLine(string $line) : string {
+  function getHostFromLine(string $line): string {
     $shortLine = substr($line, strposX($line, '"', 2));
     $offset = strposX($shortLine, ' ', 3) + 1;
     return substr($shortLine, $offset, strposX($shortLine, ' ', 4) - $offset);
   }
 
-  function getRequestFromLine(string $line) : string {
+  function getRequestFromLine(string $line): string {
     $offset = strpos($line, '"GET ');
     if ($offset === false) return false;
     else $offset += 5;
-    return str_replace(['.html', '.php'], '', substr($line, $offset, strpos($line, ' HTTP/') - $offset));
+    return str_replace(
+      ['.html', '.php'],
+      '',
+      substr($line, $offset, strpos($line, ' HTTP/') - $offset)
+    );
   }
 
-  function getUserAgentFromLine(string $line) : string {
+  function getUserAgentFromLine(string $line): string {
     $offset = strposX($line, '"', 5) + 1;
     return substr($line, $offset, strposX($line, '"', 6) - $offset);
   }
 
-  function getDateFromLine(string $line) : string {
+  function getDateFromLine(string $line): string {
     return substr($line, strpos($line, '[') + 1, 11);
   }
 
-  function getTimeFromLine(string $line) : string {
+  function getTimeFromLine(string $line): string {
     $cut = substr($line, strpos($line, '['));
     $offset = strpos($cut, ':');
     return substr($cut, $offset + 1, strpos($cut, ' ') - $offset);
   }
 
-  function getHourFromLine(string $line) : int {
+  function getHourFromLine(string $line): int {
     $hour = substr($line, strpos($line, '['));
     return (int) substr($hour, strpos($hour, ':') + 1, 2);
   }
 
-  function getReadableDate(string $string) : string {
+  function getReadableDate(string $string): string {
     return substr_replace(substr_replace($string, '. ', 6, 1), '. ', 2, 1);
   }
 

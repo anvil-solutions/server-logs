@@ -70,7 +70,7 @@ document.getElementById('bounceRate').textContent = data.bounceRate;
 addSessions(document.getElementById('sessions'))
 
 initChart(
-  '#chartTimes',
+  '#chartClicksPerHour',
   {
     labels: Object.keys(data.clicksPerHour),
     datasets: [{ values: Object.values(data.clicksPerHour) }],
@@ -82,7 +82,7 @@ initChart(
   }
 );
 initChart(
-  '#chartOSes',
+  '#chartOperatingSystems',
   {
     labels: Object.keys(data.operatingSystems),
     datasets: [{ values: Object.values(data.operatingSystems) }]
@@ -100,7 +100,7 @@ initChart(
   { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartEntry',{
+  '#chartEntryPages',{
     labels: Object.keys(data.entryPages).slice(0, 5),
     datasets: [{ values: Object.values(data.entryPages).slice(0, 5) }]
   },
@@ -108,7 +108,7 @@ initChart(
   { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartExit',{
+  '#chartExitPages',{
     labels: Object.keys(data.exitPages).slice(0, 5),
     datasets: [{ values: Object.values(data.exitPages).slice(0, 5) }]
   },
@@ -116,7 +116,7 @@ initChart(
   { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartFiles',
+  '#chartSuccessPages',
   {
     labels: Object.keys(data.successPages).slice(0, 5),
     datasets: [{ values: Object.values(data.successPages).slice(0, 5) }]
@@ -125,7 +125,7 @@ initChart(
   { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartErrors',
+  '#chartErrorPages',
   {
     labels: Object.keys(data.errorPages).slice(0, 5),
     datasets: [{ values: Object.values(data.errorPages).slice(0, 5) }]

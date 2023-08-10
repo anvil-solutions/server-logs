@@ -12,9 +12,9 @@
     <span id="devices">...</span> unterschiedlichen Geräten. Die folgenden
     Graphen zeigen Ihnen den zeitlichen Verlauf und Geräteinformationen.
   </p>
-  <div id="chartTimes" data-title="Klicks pro Stunde" data-type="line"></div>
+  <div id="chartClicksPerHour" data-title="Klicks pro Stunde" data-type="line"></div>
   <div class="res-grid">
-    <div id="chartOSes" data-title="Genutzte Betriebssysteme" data-type="bar"></div>
+    <div id="chartOperatingSystems" data-title="Genutzte Betriebssysteme" data-type="bar"></div>
     <div id="chartBrowsers" data-title="Genutzte Browser" data-type="bar"></div>
   </div>
   <h2>Sitzungen</h2>
@@ -27,11 +27,11 @@
     beträgt <span id="bounceRate">...</span>%.
   </p>
   <div class="res-grid">
-    <div id="chartEntry" data-title="Einstiegsseiten" data-type="bar"></div>
-    <div id="chartExit" data-title="Ausstiegsseiten" data-type="bar"></div>
+    <div id="chartEntryPages" data-title="Einstiegsseiten" data-type="bar"></div>
+    <div id="chartExitPages" data-title="Ausstiegsseiten" data-type="bar"></div>
   </div>
-  <div id="chartFiles" data-title="Am häufigsten angefragt" data-type="bar"></div>
-  <div id="chartErrors" data-title="Fehlerseiten" data-type="bar"></div>
+  <div id="chartSuccessPages" data-title="Am häufigsten angefragt" data-type="bar"></div>
+  <div id="chartErrorPages" data-title="Fehlerseiten" data-type="bar"></div>
   <h2>Besucher Flow</h2>
   <p>
     Es folgt eine genauere Aufschlüsselung der einzelnen Sitzungen. Sie sehen

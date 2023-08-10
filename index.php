@@ -1,126 +1,7 @@
 <?php
+
   $pageTitle = 'Übersicht';
   require_once('./src/layout/header.php');
-  require_once('./src/BrowserDetection.php');
-  $_BROWSER = new foroco\BrowserDetection();
-
-  function parseLogs(string $path): array|null {
-    if (is_dir($path) || !file_exists($path)) return null;
-
-    $file = file($path);
-    $clicks = 0;
-    $devices = [];
-    $clicksPerHour = array_fill(0, (int)date('G') + 1, 0);
-    $clicksPerFile = [];
-    foreach ($file as $line) {
-      if (isRelevantEntry($line)) {
-        $clicks++;
-        $ip = getIpFromLine($line);
-        if (!in_array($ip, $devices)) {
-          array_push($devices, $ip);
-        }
-        $clicksPerHour[getHourFromLine($line)]++;
-        $request = getRequestFromLine($line);
-        if ($request !== false) isset($clicksPerFile[$request])
-          ? $clicksPerFile[$request]++
-          : $clicksPerFile[$request] = 1;
-      }
-    }
-    arsort($clicksPerFile);
-    return [
-      'date' => date('d/M/Y'),
-      'clicks' => $clicks,
-      'devices' => $devices,
-      'clicksPerHour' => $clicksPerHour,
-      'clicksPerFile' => $clicksPerFile,
-      'averageClicksPerHour' => array_sum($clicksPerHour) / count($clicksPerHour)
-    ];
-  }
-
-  $todaysLogs = parseLogs($DOCUMENT_ROOT.'logs/access.log.current');
-
-  function parseZippedLogs(string $path, array $files): array {
-    global $_BROWSER;
-    $clicksPerDay = [];
-    $devicesPerDay = [];
-    $fileDateMap = [];
-    $operatingSystems = [];
-    $browsers = [];
-    $successPages = [];
-    $errorPages = [];
-    foreach ($files as $filename) {
-      $file = '';
-      $resource = gzopen($path.'/'.$filename, 'r');
-      while (!gzeof($resource)) $file .= gzread($resource, 4096);
-      gzclose($resource);
-      $file = explode(PHP_EOL, $file);
-      $clicks = 0;
-      $devices = [];
-      $fileDateMap[$filename] = [];
-      $currentDate = getDateFromLine($file[0]);
-      foreach ($file as $line) {
-        if (isRelevantEntry($line)) {
-          $date = getDateFromLine($line);
-          if ($date !== $currentDate) {
-            $clicksPerDay[$currentDate] = $clicks;
-            $devicesPerDay[$currentDate] = count($devices);
-            array_push($fileDateMap[$filename], $currentDate);
-            $currentDate = $date;
-            $clicks = 0;
-            $devices = [];
-          }
-          $clicks++;
-          $ip = getIpFromLine($line);
-          if (!in_array($ip, $devices)) {
-            array_push($devices, $ip);
-            $browserData = $_BROWSER->getAll(getUserAgentFromLine($line));
-            isset($operatingSystems[$browserData['os_name']])
-              ? $operatingSystems[$browserData['os_name']]++
-              : $operatingSystems[$browserData['os_name']] = 1;
-            isset($browsers[$browserData['browser_name']])
-              ? $browsers[$browserData['browser_name']]++
-              : $browsers[$browserData['browser_name']] = 1;
-          }
-          $request = getRequestFromLine($line);
-          if ($request !== false) isset($successPages[$request])
-            ? $successPages[$request]++
-            : $successPages[$request] = 1;
-        } else if (isError($line)) {
-          $request = getRequestFromLine($line);
-          if ($request !== false) isset($errorPages[$request])
-              ? $errorPages[$request]++
-              : $errorPages[$request] = 1;
-        }
-      }
-      $clicksPerDay[$currentDate] = $clicks;
-      $devicesPerDay[$currentDate] = count($devices);
-      array_push($fileDateMap[$filename], $currentDate);
-    }
-    arsort($operatingSystems);
-    arsort($browsers);
-    arsort($successPages);
-    arsort($errorPages);
-    return [
-      'averageClicksPerDay' => round(array_sum($clicksPerDay) / count($clicksPerDay), 2),
-      'averageDevicesPerDay' => round(array_sum($devicesPerDay) / count($devicesPerDay), 2),
-      'clicksPerDay' => $clicksPerDay,
-      'devicesPerDay' => $devicesPerDay,
-      'fileDateMap' => $fileDateMap,
-      'operatingSystems' => $operatingSystems,
-      'browsers' => $browsers,
-      'successPages' => $successPages,
-      'errorPages' => $errorPages
-    ];
-  }
-
-  $path = $DOCUMENT_ROOT.'logs';
-  $files = array_filter(
-    array_diff(scandir($path), array('.', '..')),
-    function ($file) {
-      return strpos($file, 'access.log') > -1 && strpos($file, 'gz') > -1;
-    }
-  );
-  $combinedLogs = parseZippedLogs($path, $files);
 ?>
 <main>
   <h2>Willkommen</h2>
@@ -159,54 +40,16 @@
   </div>
   <div id="chartSuccessPages" data-title="Am häufigsten angefragt" data-type="bar"></div>
   <div id="chartErrorPages" data-title="Fehlerseiten" data-type="bar"></div>
-  <h2>Monatliche Analyse</h2>
-  <p>
-    Unten sehen Sie eine Tabelle mit Aufrufszahlen und Menge der transferierten Daten in den einzelnen Monaten des laufenden Jahres.
-  </p>
-  <div class="table-container">
-  <?php
-    $filename = $DOCUMENT_ROOT.'logs/traffic.html/index.html';
-
-    if (is_dir($filename) || !file_exists($filename)) {
-      echo '<p>Es wurde kein Zugriffsprotokoll gefunden.</p>';
-    } else {
-      $doc = new DOMDocument();
-      $doc->loadHTML(implode('', file($filename)));
-
-      $table = $doc->saveHTML($doc->getElementsByTagName('table')->item(0));
-      for ($i = 0; $i < 3; $i++) $table = preg_replace('/<(?:td|th)[^>]*>.*?<\/(?:td|th)>\s+<\/tr>/i', '</tr>', $table);
-
-      echo str_replace(
-        ['Megabytes', 'Zugriffe'],
-        ['MB', 'Aufrufe'],
-        preg_replace('#<a.*?>(.*?)</a>#i', '\1', $table)
-      );
-    }
-  ?>
-  </div>
-  <div class="res-grid">
-    <div>
-      <h2>Umwandlungstabelle</h2>
-      <p>
-        8 Bits = 1 Byte<br>
-        1000 Bytes = 1 kB<br>
-        1000 kB = 1 MB<br>
-        1000 MB = 1 GB
-      </p>
-    </div>
-    <div>
-      <h2>Einstellungen</h2>
-      <ul>
-        <li><a href="./password">Passwort ändern</a></li>
-        <li><a href="./logout">Abmelden</a></li>
-      </ul>
-    </div>
-  </div>
+  <h2>Einstellungen</h2>
+  <ul>
+    <li><a href="./password">Passwort ändern</a></li>
+    <li><a href="./logout">Abmelden</a></li>
+  </ul>
 </main>
 <script src="https://unpkg.com/frappe-charts@1.6.1/dist/frappe-charts.min.umd.js"></script>
-<script>
-  const todaysLogs = <?= json_encode($todaysLogs) ?>;
-  const combinedLogs = <?= json_encode($combinedLogs) ?>;
+<script type="module">
+  const todaysLogs = await (await fetch('./api/today')).json();
+  const combinedLogs = await (await fetch('./api/combined')).json();
 
   function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
     const dataset = document.querySelector(id).dataset;

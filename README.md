@@ -28,8 +28,8 @@ This tool allows you to view and interpret the logged data on your IONOS server 
 - General monthly traffic data
 
 ## Libraries Used
-- [Frappe Charts](https://github.com/frappe/charts) (MIT License)
-- [PHP Browser Detection](https://github.com/foroco/php-browser-detection) (MIT License)
+- [Frappe Charts](https://github.com/frappe/charts) (1.6.1 | MIT)
+- [PHP Browser Detection](https://github.com/foroco/php-browser-detection) (2.7 | MIT)
 
 ## Getting Started
 Just copy the files into a folder on your IONOS webspace and set the password upon the first login.

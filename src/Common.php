@@ -82,7 +82,7 @@
   }
 
   function getReadableDate(string $string): string {
-    return substr_replace(substr_replace($string, '. ', 6, 1), '. ', 2, 1);
+    return substr_replace(substr_replace(strip_tags($string), '. ', 6, 1), '. ', 2, 1);
   }
 
   function strposX(string $haystack, string $needle, int $number = 1) {

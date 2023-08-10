@@ -29,7 +29,7 @@
     return [
       'date' => date('d/M/Y'),
       'clicks' => $clicks,
-      'devices' => $devices,
+      'devices' => count($devices),
       'clicksPerHour' => $clicksPerHour,
       'clicksPerFile' => $clicksPerFile,
       'averageClicksPerHour' => array_sum($clicksPerHour) / count($clicksPerHour)

@@ -1,7 +1,7 @@
 <?php
 
   $pageTitle = 'Abgemeldet';
-  require_once('./src/layout/header.php');
+  require_once(__DIR__.'/src/layout/header.php');
   $_SESSION['loggedIn'] = '';
 ?>
 <main class="login">

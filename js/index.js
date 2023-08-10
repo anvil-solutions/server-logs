@@ -1,17 +1,22 @@
+import { Chart } from 'https://unpkg.com/frappe-charts@1.6.1/dist/frappe-charts.min.esm.js';
+
 const todaysLogs = await (await fetch('./api/today')).json();
 const combinedLogs = await (await fetch('./api/combined')).json();
 
 function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
   const { title, type } = document.querySelector(id).dataset;
-  return new frappe.Chart(id, {
-    title: title,
-    data: data,
-    type: type,
-    colors: ['#1976D2'],
-    lineOptions: { regionFill: 1, hideDots: 1 },
-    axisOptions: axisOptions,
-    tooltipOptions: tooltipOptions
-  });
+  return new Chart(
+    id,
+    {
+      title,
+      data,
+      type,
+      colors: ['#1976D2'],
+      lineOptions: { regionFill: 1, hideDots: 1 },
+      axisOptions,
+      tooltipOptions
+    }
+  );
 }
 
 function addLinkTable(element) {
@@ -31,10 +36,8 @@ function addLinkTable(element) {
 }
 
 document.getElementById('lastRefreshed').textContent = new Date().toLocaleTimeString('de');
-document.getElementById('quickPreview').textContent = todaysLogs === null
-  ? 'Es wurde kein Zugriffsprotokoll gefunden.'
-  : 'Heute gab es insgesamt ' + todaysLogs.clicks.toString() + ' Aufrufe von ' +
-    todaysLogs.devices.length.toString() + ' unterschiedlichen Geräten.';
+document.getElementById('clicks').textContent = todaysLogs.clicks.toString();
+document.getElementById('devices').textContent = todaysLogs.devices.toString();
 addLinkTable(document.getElementById('linkTable'));
 document.getElementById('averageClicksPerDay').textContent = combinedLogs.averageClicksPerDay.toString();
 document.getElementById('averageDevicesPerDay').textContent = combinedLogs.averageDevicesPerDay.toString();

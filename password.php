@@ -1,7 +1,7 @@
 <?php
 
   $pageTitle = 'Passwort Ändern';
-  require_once('./src/layout/header.php');
+  require_once(__DIR__.'/src/layout/header.php');
   if (isset($_POST['password']) && isset($_POST['newPassword']) && isset($_POST['newPasswordRepeat'])) {
     $settings = json_decode(file_get_contents('./src/settings.json'));
     if (password_verify($_POST['password'], $settings->passwordHash) && $_POST['newPassword'] === $_POST['newPasswordRepeat']) {

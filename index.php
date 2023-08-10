@@ -1,23 +1,27 @@
 <?php
 
   $pageTitle = 'Übersicht';
-  require_once('./src/layout/header.php');
+  require_once(__DIR__.'/src/layout/header.php');
 ?>
 <main>
   <h2>Willkommen</h2>
   <p>
-    Willkommen auf Ihrer Übersichtsseite.
-    Mit Schließen des Browsers werden Sie automatisch abgemeldet.
-    Zuletzt aktualisiert: <span id="lastRefreshed">...</span> Uhr.
+    Willkommen auf Ihrer Übersichtsseite. Mit Schließen des Browsers werden Sie
+    automatisch abgemeldet. Zuletzt aktualisiert:
+    <span id="lastRefreshed">...</span> Uhr.
   </p>
   <h2>Heutige Schnellanalyse</h2>
-  <p id="quickPreview">...</p>
+  <p>
+    Heute gab es insgesamt <span id="clicks">...</span> Aufrufe von
+    <span id="devices">...</span> unterschiedlichen Geräten.
+  </p>
   <div id="chartClicksPerHour" data-title="Klicks pro Stunde" data-type="line"></div>
   <div id="chartClicksPerFile" data-title="Am häufigsten angefragt" data-type="bar"></div>
   <h2>Detailansicht</h2>
   <p>
-    Die Detailansichten zeigen Ihnen eine genauere Auswertung der Daten für den gewählten Tag.
-    Klicken Sie auf einen Tag um eine Detailansicht des jeweiligen Datums zu erhalten.
+    Die Detailansichten zeigen Ihnen eine genauere Auswertung der Daten für den
+    gewählten Tag. Klicken Sie auf einen Tag um eine Detailansicht des
+    jeweiligen Datums zu erhalten.
   </p>
   <div id="linkTable" class="week-grid"></div>
   <h2>Verlauf</h2>
@@ -31,8 +35,10 @@
   <div id="chartDevicesPerDay" data-title="Geräte pro Tag" data-type="line"></div>
   <h2>Gesamtdaten</h2>
   <p>
-    Unten sehen Sie die Auswertung der aufgezeichneten Daten über die gesamte Zeitspanne.
-    Genauer aufgeschlüsselt sind die genutzen Browser und Betriebssysteme, sowie die meistbesuchten Seiten und die häufigsten Fehlerseiten.
+    Unten sehen Sie die Auswertung der aufgezeichneten Daten über die gesamte
+    Zeitspanne. Genauer aufgeschlüsselt sind die genutzen Browser und
+    Betriebssysteme, sowie die meistbesuchten Seiten und die häufigsten
+    Fehlerseiten.
   </p>
   <div class="res-grid">
     <div id="chartOperatingSystems" data-title="Genutzte Betriebssysteme" data-type="percentage"></div>
@@ -46,5 +52,4 @@
     <li><a href="./logout">Abmelden</a></li>
   </ul>
 </main>
-<script src="https://unpkg.com/frappe-charts@1.6.1/dist/frappe-charts.min.umd.js"></script>
 <script src="./js/index.js" type="module"></script>

@@ -4,9 +4,9 @@
   require_once(__DIR__.'/src/layout/header.php');
 ?>
 <main>
-  <h2>Übersicht für den <?= getReadableDate($_GET['j']); ?></h2>
+  <h2>Übersicht für den <?= getReadableDate($_GET['date']) ?></h2>
   <p>
-    Am <?= getReadableDate($_GET['j']) ?> gab es insgesamt
+    Am <?= getReadableDate($_GET['date']) ?> gab es insgesamt
     <span id="clicks">...</span> Aufrufe von
     <span id="devices">...</span> unterschiedlichen Geräten. Die folgenden
     Graphen zeigen Ihnen den zeitlichen Verlauf und Geräteinformationen.
@@ -39,4 +39,4 @@
   </p>
   <div id="sessions"></div>
 </main>
-<script src="./js/details.js" type="module"></script>
+<script src="./js/day.js" type="module"></script>

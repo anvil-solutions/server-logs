@@ -26,14 +26,14 @@ function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
 function addLinkTable(element) {
   element.textContent = '';
   const todaysElement = document.createElement('a');
-  todaysElement.href = './details?i=access.log.current&j=' + todaysLogs.date;
+  todaysElement.href = './day?file=access.log.current&date=' + todaysLogs.date;
   todaysElement.append(document.createTextNode(todaysLogs.date));
   element.append(todaysElement);
   for (
     const [file, dates] of Object.entries(combinedLogs.fileDateMap).reverse()
   ) for (const date of dates.reverse()) {
     const dateElement = document.createElement('a');
-    dateElement.href = './details?i=' + file + '&j=' + date;
+    dateElement.href = './day?file=' + file + '&date=' + date;
     dateElement.append(document.createTextNode(date));
     element.append(dateElement);
   }

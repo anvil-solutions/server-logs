@@ -5,7 +5,8 @@ import {
 const parameters = new URLSearchParams(window.location.search);
 const data = await (
   await fetch(
-    './api/details?i=' + parameters.get('i') + '&j=' + parameters.get('j')
+    './api/day?file=' + parameters.get('file') + '&date=' +
+      parameters.get('date')
   )
   // eslint-disable-next-line unicorn/no-await-expression-member
 ).json();

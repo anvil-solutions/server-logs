@@ -5,7 +5,7 @@
   require_once(__DIR__.'/../src/BrowserDetection.php');
   $_BROWSER = new foroco\BrowserDetection();
 
-  function parseLogs(string $path): array {
+  function parseLogs(string $path, string $date): array {
     if (is_dir($path) || !file_exists($path)) return [];
 
     global $_BROWSER;
@@ -22,7 +22,7 @@
     $successPages = [];
     $errorPages = [];
     foreach ($file as $line) {
-      if (getDateFromLine($line) === $_GET['j']) {
+      if (getDateFromLine($line) === $date) {
         if (isRelevantEntry($line)) {
           $clicks++;
           $ip = getIpFromLine($line);
@@ -104,16 +104,18 @@
   }
 
   if (
-    !isset($_GET['i'])
-    || !isset($_GET['j'])
-    || strpos($_GET['i'], '..') !== false
-    || strpos($_GET['i'], 'access.log') === false
-    || preg_match('/^(([1-9])|([0][1-9])|([1-2][0-9])|([3][0-1]))\/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\/\d{4}$/', $_GET['j']) === 0
+    !isset($_GET['file'])
+    || !isset($_GET['date'])
+    || strpos($_GET['file'], '..') !== false
+    || strpos($_GET['file'], 'access.log') === false
+    || preg_match('/^(([1-9])|([0][1-9])|([1-2][0-9])|([3][0-1]))\/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\/\d{4}$/', $_GET['date']) === 0
   ) {
     http_response_code(400);
     echo '{}';
     exit;
   }
 
-  echo json_encode(parseLogs($DOCUMENT_ROOT.'logs/'.$_GET['i']));
+  echo json_encode(
+    parseLogs($DOCUMENT_ROOT.'logs/'.$_GET['file'], $_GET['date'])
+  );
 ?>

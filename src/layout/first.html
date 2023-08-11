@@ -1,19 +1,21 @@
-<main class="login">
+<main class="password">
   <h2>Willkommen</h2>
   <p>
     Bitte legen sie ein Kennwort für Ihren neuen Zugang fest.
   </p>
   <form method="POST">
-    <label><div>Kennwort: </div><input name="newPassword" type="password" required id="password1" oninput="setValidity()"></label>
-    <label><div>Kennwort bestätigen: </div><input name="newPasswordRepeat" type="password" required id="password2" oninput="setValidity()"></label>
-    <div class="btnContainer"><button type="submit" class="btn">Anmelden</button></div>
+    <label for="newPassword">Kennwort</label>
+    <input name="newPassword" type="password" required id="newPassword" oninput="setValidity()" autocomplete="new-password">
+    <label for="newPasswordRepeat">Kennwort bestätigen</label>
+    <input name="newPasswordRepeat" type="password" required id="newPasswordRepeat" oninput="setValidity()" autocomplete="new-password">
+    <button type="submit" class="btn">Anmelden</button>
   </form>
   <script>
     function setValidity() {
-      const password1 = document.getElementById('password1');
-      const password2 = document.getElementById('password2');
-      if (password1.value === password2.value) password2.setCustomValidity('');
-      else password2.setCustomValidity('Stimmt nicht überein.');
+      const newPassword = document.getElementById('newPassword');
+      const newPasswordRepeat = document.getElementById('newPasswordRepeat');
+      if (newPassword.value === newPasswordRepeat.value) newPasswordRepeat.setCustomValidity('');
+      else newPasswordRepeat.setCustomValidity('Stimmt nicht überein.');
     }
   </script>
 </main>

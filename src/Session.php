@@ -6,7 +6,11 @@
   session_set_cookie_params(0, '/', null, true, true);
   session_name('SESSION_LOGS');
   session_start();
-  $settings = json_decode(file_get_contents(__DIR__.'/settings.json'));
+  $settings = json_decode(
+    file_exists(__DIR__.'/settings.json')
+      ? file_get_contents(__DIR__.'/settings.json')
+      : '{}'
+  );
   $newUser = true;
   if (property_exists($settings, 'passwordHash')) {
     $newUser = false;

@@ -1,26 +1,33 @@
-import { Chart } from 'https://unpkg.com/frappe-charts@1.6.1/dist/frappe-charts.min.esm.js';
+import {
+  Chart
+} from 'https://unpkg.com/frappe-charts@1.6.1/dist/frappe-charts.min.esm.js';
 
 const parameters = new URLSearchParams(window.location.search);
-const data = await (await fetch('./api/details?i=' + parameters.get('i') + '&j=' + parameters.get('j'))).json();
+const data = await (
+  await fetch(
+    './api/details?i=' + parameters.get('i') + '&j=' + parameters.get('j')
+  )
+  // eslint-disable-next-line unicorn/no-await-expression-member
+).json();
 
-function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
+function initChart(id, chartData, tooltipOptions = {}, axisOptions = {}) {
   const { title, type } = document.querySelector(id).dataset;
   return new Chart(
     id,
     {
-      title,
-      data,
-      type,
-      colors: ['#1976D2'],
-      lineOptions: { regionFill: 1, hideDots: 1 },
       axisOptions,
-      tooltipOptions
+      colors: ['#1976D2'],
+      data: chartData,
+      lineOptions: { hideDots: 1, regionFill: 1 },
+      title,
+      tooltipOptions,
+      type
     }
   );
 }
 
 function timestampToString(timestamp) {
-  return new Date((timestamp - 3600) * 1000).toLocaleTimeString('de')
+  return new Date((timestamp - 3600) * 1000).toLocaleTimeString('de');
 }
 
 function addSessions(element) {
@@ -31,7 +38,9 @@ function addSessions(element) {
     const timeline = document.createElement('div');
     heading.append(document.createTextNode('Sitzung ' + sessionIndex));
     paragraph.append(
-      document.createTextNode('Sitzungsdauer: ' + timestampToString(device.duration)),
+      document.createTextNode(
+        'Sitzungsdauer: ' + timestampToString(device.duration)
+      ),
       document.createElement('br'),
       document.createTextNode('Seitenaufrufe: ' + device.requests.length),
       document.createElement('br'),
@@ -64,72 +73,72 @@ function addSessions(element) {
 
 document.getElementById('clicks').textContent = data.clicks;
 document.getElementById('devices').textContent = data.devices.length;
-document.getElementById('averageSessionDuration').textContent = timestampToString(data.averageSessionDuration);
-document.getElementById('averageSessionClicks').textContent = data.averageSessionClicks;
+document.getElementById(
+  'averageSessionDuration'
+).textContent = timestampToString(data.averageSessionDuration);
+document.getElementById(
+  'averageSessionClicks'
+).textContent = data.averageSessionClicks;
 document.getElementById('bounceRate').textContent = data.bounceRate;
-addSessions(document.getElementById('sessions'))
+addSessions(document.getElementById('sessions'));
 
 initChart(
   '#chartClicksPerHour',
   {
-    labels: Object.keys(data.clicksPerHour),
     datasets: [{ values: Object.values(data.clicksPerHour) }],
-    yMarkers: [{ label: "Durchschnitt", value: data.averageClicksPerHour }]
+    labels: Object.keys(data.clicksPerHour),
+    yMarkers: [{ label: 'Durchschnitt', value: data.averageClicksPerHour }]
   },
   {
-    formatTooltipX: d => d + ' Uhr',
-    formatTooltipY: d => d + ' Klicks'
+    formatTooltipX: value => value + ' Uhr',
+    formatTooltipY: value => value + ' Klicks'
   }
 );
 initChart(
   '#chartOperatingSystems',
   {
-    labels: Object.keys(data.operatingSystems),
-    datasets: [{ values: Object.values(data.operatingSystems) }]
+    datasets: [{ values: Object.values(data.operatingSystems) }],
+    labels: Object.keys(data.operatingSystems)
   },
-  { formatTooltipY: d => d + ' Geräte' },
+  { formatTooltipY: value => value + ' Geräte' },
   { xAxisMode: 'tick' }
 );
 initChart(
   '#chartBrowsers',
   {
-    labels: Object.keys(data.browsers),
-    datasets: [{ values: Object.values(data.browsers) }]
+    datasets: [{ values: Object.values(data.browsers) }],
+    labels: Object.keys(data.browsers)
   },
-  { formatTooltipY: d => d + ' Geräte' },
+  { formatTooltipY: value => value + ' Geräte' },
   { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartEntryPages',{
-    labels: Object.keys(data.entryPages).slice(0, 5),
-    datasets: [{ values: Object.values(data.entryPages).slice(0, 5) }]
-  },
-  {},
-  { xAxisMode: 'tick' }
+  '#chartEntryPages', {
+    datasets: [{ values: Object.values(data.entryPages).slice(0, 5) }],
+    labels: Object.keys(data.entryPages).slice(0, 5)
+  }, {}, { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartExitPages',{
-    labels: Object.keys(data.exitPages).slice(0, 5),
-    datasets: [{ values: Object.values(data.exitPages).slice(0, 5) }]
-  },
-  {},
-  { xAxisMode: 'tick' }
+  '#chartExitPages', {
+    datasets: [{ values: Object.values(data.exitPages).slice(0, 5) }],
+    labels: Object.keys(data.exitPages).slice(0, 5)
+  }, {}, { xAxisMode: 'tick' }
 );
 initChart(
   '#chartSuccessPages',
   {
-    labels: Object.keys(data.successPages).slice(0, 5),
-    datasets: [{ values: Object.values(data.successPages).slice(0, 5) }]
+    datasets: [{ values: Object.values(data.successPages).slice(0, 5) }],
+    labels: Object.keys(data.successPages).slice(0, 5)
   },
-  { formatTooltipY: d => d + ' Klicks' },
+  { formatTooltipY: value => value + ' Klicks' },
   { xAxisMode: 'tick' }
 );
 initChart(
   '#chartErrorPages',
   {
-    labels: Object.keys(data.errorPages).slice(0, 5),
-    datasets: [{ values: Object.values(data.errorPages).slice(0, 5) }]
+    datasets: [{ values: Object.values(data.errorPages).slice(0, 5) }],
+    labels: Object.keys(data.errorPages).slice(0, 5)
   },
-  { formatTooltipY: d => d + ' Klicks' },
+  { formatTooltipY: value => value + ' Klicks' },
   { xAxisMode: 'tick' }
 );

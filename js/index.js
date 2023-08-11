@@ -1,6 +1,10 @@
-import { Chart } from 'https://unpkg.com/frappe-charts@1.6.1/dist/frappe-charts.min.esm.js';
+import {
+  Chart
+} from 'https://unpkg.com/frappe-charts@1.6.1/dist/frappe-charts.min.esm.js';
 
+// eslint-disable-next-line unicorn/no-await-expression-member
 const todaysLogs = await (await fetch('./api/today')).json();
+// eslint-disable-next-line unicorn/no-await-expression-member
 const combinedLogs = await (await fetch('./api/combined')).json();
 
 function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
@@ -8,13 +12,13 @@ function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
   return new Chart(
     id,
     {
-      title,
-      data,
-      type,
-      colors: ['#1976D2'],
-      lineOptions: { regionFill: 1, hideDots: 1 },
       axisOptions,
-      tooltipOptions
+      colors: ['#1976D2'],
+      data,
+      lineOptions: { hideDots: 1, regionFill: 1 },
+      title,
+      tooltipOptions,
+      type
     }
   );
 }
@@ -24,94 +28,119 @@ function addLinkTable(element) {
   const todaysElement = document.createElement('a');
   todaysElement.href = './details?i=access.log.current&j=' + todaysLogs.date;
   todaysElement.append(document.createTextNode(todaysLogs.date));
-  element.append(todaysElement)
-  for (const [file, dates] of Object.entries(combinedLogs.fileDateMap).reverse()) {
-    for (const date of dates.reverse()) {
-      const dateElement = document.createElement('a');
-      dateElement.href = './details?i=' + file + '&j=' + date;
-      dateElement.append(document.createTextNode(date));
-      element.append(dateElement)
-    }
+  element.append(todaysElement);
+  for (
+    const [file, dates] of Object.entries(combinedLogs.fileDateMap).reverse()
+  ) for (const date of dates.reverse()) {
+    const dateElement = document.createElement('a');
+    dateElement.href = './details?i=' + file + '&j=' + date;
+    dateElement.append(document.createTextNode(date));
+    element.append(dateElement);
   }
 }
 
-document.getElementById('lastRefreshed').textContent = new Date().toLocaleTimeString('de');
+document.getElementById(
+  'lastRefreshed'
+).textContent = new Date().toLocaleTimeString('de');
 document.getElementById('clicks').textContent = todaysLogs.clicks.toString();
 document.getElementById('devices').textContent = todaysLogs.devices.toString();
 addLinkTable(document.getElementById('linkTable'));
-document.getElementById('averageClicksPerDay').textContent = combinedLogs.averageClicksPerDay.toString();
-document.getElementById('averageDevicesPerDay').textContent = combinedLogs.averageDevicesPerDay.toString();
+document.getElementById(
+  'averageClicksPerDay'
+).textContent = combinedLogs.averageClicksPerDay.toString();
+document.getElementById(
+  'averageDevicesPerDay'
+).textContent = combinedLogs.averageDevicesPerDay.toString();
 
 initChart(
   '#chartClicksPerHour',
   {
-    labels: Object.keys(todaysLogs.clicksPerHour),
     datasets: [{ values: Object.values(todaysLogs.clicksPerHour) }],
-    yMarkers: [{ label: "Durchschnitt", value: todaysLogs.averageClicksPerHour }]
+    labels: Object.keys(todaysLogs.clicksPerHour),
+    yMarkers: [
+      {
+        label: 'Durchschnitt',
+        value: todaysLogs.averageClicksPerHour
+      }
+    ]
   },
   {
-    formatTooltipX: d => d + ' Uhr',
-    formatTooltipY: d => d + ' Klicks'
+    formatTooltipX: value => value + ' Uhr',
+    formatTooltipY: value => value + ' Klicks'
   }
 );
 initChart(
   '#chartClicksPerFile',
   {
-    labels: Object.keys(todaysLogs.clicksPerFile).slice(0, 5),
-    datasets: [{ values: Object.values(todaysLogs.clicksPerFile).slice(0, 5) }]
+    datasets: [{ values: Object.values(todaysLogs.clicksPerFile).slice(0, 5) }],
+    labels: Object.keys(todaysLogs.clicksPerFile).slice(0, 5)
   },
-  { formatTooltipY: d => d + ' Klicks' },
+  { formatTooltipY: value => value + ' Klicks' },
   { xAxisMode: 'tick' }
 );
 initChart(
   '#chartClicksPerDay',
   {
-    labels: Object.keys(combinedLogs.clicksPerDay),
     datasets: [{ values: Object.values(combinedLogs.clicksPerDay) }],
-    yMarkers: [{ label: "Durchschnitt", value:combinedLogs.averageClicksPerDay }]
+    labels: Object.keys(combinedLogs.clicksPerDay),
+    yMarkers: [
+      {
+        label: 'Durchschnitt',
+        value: combinedLogs.averageClicksPerDay
+      }
+    ]
   },
-  { formatTooltipY: d => d + ' Klicks' },
+  { formatTooltipY: value => value + ' Klicks' },
   { xIsSeries: true }
 );
 initChart(
   '#chartDevicesPerDay',
   {
-    labels: Object.keys(combinedLogs.devicesPerDay),
     datasets: [{ values: Object.values(combinedLogs.devicesPerDay) }],
-    yMarkers: [{ label: "Durchschnitt", value: combinedLogs.averageDevicesPerDay }]
+    labels: Object.keys(combinedLogs.devicesPerDay),
+    yMarkers: [
+      {
+        label: 'Durchschnitt',
+        value: combinedLogs.averageDevicesPerDay
+      }
+    ]
   },
-  { formatTooltipY: d => d + ' Geräte' },
+  { formatTooltipY: value => value + ' Geräte' },
   { xIsSeries: true }
 );
 initChart(
   '#chartOperatingSystems',
   {
-    labels: Object.keys(combinedLogs.operatingSystems),
-    datasets: [{ values: Object.values(combinedLogs.operatingSystems) }]
+    datasets: [{ values: Object.values(combinedLogs.operatingSystems) }],
+    labels: Object.keys(combinedLogs.operatingSystems)
   }
 );
 initChart(
   '#chartBrowsers',
   {
-    labels: Object.keys(combinedLogs.browsers),
-    datasets: [{ values: Object.values(combinedLogs.browsers) }]
+    datasets: [{ values: Object.values(combinedLogs.browsers) }],
+    labels: Object.keys(combinedLogs.browsers)
   }
 );
 initChart(
   '#chartSuccessPages',
   {
-    labels: Object.keys(combinedLogs.successPages).slice(0, 5),
-    datasets: [{ values: Object.values(combinedLogs.successPages).slice(0, 5) }]
+    datasets: [
+      {
+        values: Object.values(combinedLogs.successPages).slice(0, 5)
+      }
+    ],
+    labels: Object.keys(combinedLogs.successPages).slice(0, 5)
   },
-  { formatTooltipY: d => d + ' Klicks' },
+  { formatTooltipY: value => value + ' Klicks' },
   { xAxisMode: 'tick' }
 );
 initChart(
   '#chartErrorPages',
   {
-    labels: Object.keys(combinedLogs.errorPages).slice(0, 5),
-    datasets: [{ values: Object.values(combinedLogs.errorPages).slice(0, 5) }]
+    datasets: [{ values: Object.values(combinedLogs.errorPages).slice(0, 5) }],
+    labels: Object.keys(combinedLogs.errorPages).slice(0, 5)
   },
-  { formatTooltipY: d => d + ' Klicks' },
+  { formatTooltipY: value => value + ' Klicks' },
   { xAxisMode: 'tick' }
 );

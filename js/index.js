@@ -1,27 +1,9 @@
-import {
-  Chart
-} from 'https://unpkg.com/frappe-charts@1.6.1/dist/frappe-charts.min.esm.js';
+import { initChart } from './common.js';
 
 // eslint-disable-next-line unicorn/no-await-expression-member
 const todaysLogs = await (await fetch('./api/today')).json();
 // eslint-disable-next-line unicorn/no-await-expression-member
 const combinedLogs = await (await fetch('./api/combined')).json();
-
-function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
-  const { title, type } = document.querySelector(id).dataset;
-  return new Chart(
-    id,
-    {
-      axisOptions,
-      colors: ['#1976D2'],
-      data,
-      lineOptions: { hideDots: 1, regionFill: 1 },
-      title,
-      tooltipOptions,
-      type
-    }
-  );
-}
 
 function getReadableWeek(file) {
   const parts = file.split('.');
@@ -78,8 +60,7 @@ document.getElementById(
 ).textContent = combinedLogs.averageDevicesPerDay.toString();
 
 initChart(
-  '#chartClicksPerHour',
-  {
+  '#chartClicksPerHour', {
     datasets: [{ values: Object.values(todaysLogs.clicksPerHour) }],
     labels: Object.keys(todaysLogs.clicksPerHour),
     yMarkers: [
@@ -88,24 +69,19 @@ initChart(
         value: todaysLogs.averageClicksPerHour
       }
     ]
-  },
-  {
+  }, {
     formatTooltipX: value => value + ' Uhr',
     formatTooltipY: value => value + ' Klicks'
   }
 );
 initChart(
-  '#chartClicksPerFile',
-  {
+  '#chartClicksPerFile', {
     datasets: [{ values: Object.values(todaysLogs.clicksPerFile).slice(0, 5) }],
     labels: Object.keys(todaysLogs.clicksPerFile).slice(0, 5)
-  },
-  { formatTooltipY: value => value + ' Klicks' },
-  { xAxisMode: 'tick' }
+  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartClicksPerDay',
-  {
+  '#chartClicksPerDay', {
     datasets: [{ values: Object.values(combinedLogs.clicksPerDay) }],
     labels: Object.keys(combinedLogs.clicksPerDay),
     yMarkers: [
@@ -114,13 +90,10 @@ initChart(
         value: combinedLogs.averageClicksPerDay
       }
     ]
-  },
-  { formatTooltipY: value => value + ' Klicks' },
-  { xIsSeries: true }
+  }, { formatTooltipY: value => value + ' Klicks' }, { xIsSeries: true }
 );
 initChart(
-  '#chartDevicesPerDay',
-  {
+  '#chartDevicesPerDay', {
     datasets: [{ values: Object.values(combinedLogs.devicesPerDay) }],
     labels: Object.keys(combinedLogs.devicesPerDay),
     yMarkers: [
@@ -129,43 +102,33 @@ initChart(
         value: combinedLogs.averageDevicesPerDay
       }
     ]
-  },
-  { formatTooltipY: value => value + ' Geräte' },
-  { xIsSeries: true }
+  }, { formatTooltipY: value => value + ' Geräte' }, { xIsSeries: true }
 );
 initChart(
-  '#chartOperatingSystems',
-  {
+  '#chartOperatingSystems', {
     datasets: [{ values: Object.values(combinedLogs.operatingSystems) }],
     labels: Object.keys(combinedLogs.operatingSystems)
   }
 );
 initChart(
-  '#chartBrowsers',
-  {
+  '#chartBrowsers', {
     datasets: [{ values: Object.values(combinedLogs.browsers) }],
     labels: Object.keys(combinedLogs.browsers)
   }
 );
 initChart(
-  '#chartSuccessPages',
-  {
+  '#chartSuccessPages', {
     datasets: [
       {
         values: Object.values(combinedLogs.successPages).slice(0, 5)
       }
     ],
     labels: Object.keys(combinedLogs.successPages).slice(0, 5)
-  },
-  { formatTooltipY: value => value + ' Klicks' },
-  { xAxisMode: 'tick' }
+  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartErrorPages',
-  {
+  '#chartErrorPages', {
     datasets: [{ values: Object.values(combinedLogs.errorPages).slice(0, 5) }],
     labels: Object.keys(combinedLogs.errorPages).slice(0, 5)
-  },
-  { formatTooltipY: value => value + ' Klicks' },
-  { xAxisMode: 'tick' }
+  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
 );

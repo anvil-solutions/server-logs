@@ -1,6 +1,4 @@
-import {
-  Chart
-} from 'https://unpkg.com/frappe-charts@1.6.1/dist/frappe-charts.min.esm.js';
+import { initChart } from './common.js';
 
 const parameters = new URLSearchParams(window.location.search);
 const data = await (
@@ -10,22 +8,6 @@ const data = await (
   )
   // eslint-disable-next-line unicorn/no-await-expression-member
 ).json();
-
-function initChart(id, chartData, tooltipOptions = {}, axisOptions = {}) {
-  const { title, type } = document.querySelector(id).dataset;
-  return new Chart(
-    id,
-    {
-      axisOptions,
-      colors: ['#1976D2'],
-      data: chartData,
-      lineOptions: { hideDots: 1, regionFill: 1 },
-      title,
-      tooltipOptions,
-      type
-    }
-  );
-}
 
 function timestampToString(timestamp) {
   return new Date((timestamp - 3600) * 1000).toLocaleTimeString('de');
@@ -84,34 +66,26 @@ document.getElementById('bounceRate').textContent = data.bounceRate;
 addSessions(document.getElementById('sessions'));
 
 initChart(
-  '#chartClicksPerHour',
-  {
+  '#chartClicksPerHour', {
     datasets: [{ values: Object.values(data.clicksPerHour) }],
     labels: Object.keys(data.clicksPerHour),
     yMarkers: [{ label: 'Durchschnitt', value: data.averageClicksPerHour }]
-  },
-  {
+  }, {
     formatTooltipX: value => value + ' Uhr',
     formatTooltipY: value => value + ' Klicks'
   }
 );
 initChart(
-  '#chartOperatingSystems',
-  {
+  '#chartOperatingSystems', {
     datasets: [{ values: Object.values(data.operatingSystems) }],
     labels: Object.keys(data.operatingSystems)
-  },
-  { formatTooltipY: value => value + ' Geräte' },
-  { xAxisMode: 'tick' }
+  }, { formatTooltipY: value => value + ' Geräte' }, { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartBrowsers',
-  {
+  '#chartBrowsers', {
     datasets: [{ values: Object.values(data.browsers) }],
     labels: Object.keys(data.browsers)
-  },
-  { formatTooltipY: value => value + ' Geräte' },
-  { xAxisMode: 'tick' }
+  }, { formatTooltipY: value => value + ' Geräte' }, { xAxisMode: 'tick' }
 );
 initChart(
   '#chartEntryPages', {
@@ -126,20 +100,14 @@ initChart(
   }, {}, { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartSuccessPages',
-  {
+  '#chartSuccessPages', {
     datasets: [{ values: Object.values(data.successPages).slice(0, 5) }],
     labels: Object.keys(data.successPages).slice(0, 5)
-  },
-  { formatTooltipY: value => value + ' Klicks' },
-  { xAxisMode: 'tick' }
+  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartErrorPages',
-  {
+  '#chartErrorPages', {
     datasets: [{ values: Object.values(data.errorPages).slice(0, 5) }],
     labels: Object.keys(data.errorPages).slice(0, 5)
-  },
-  { formatTooltipY: value => value + ' Klicks' },
-  { xAxisMode: 'tick' }
+  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
 );

@@ -40,22 +40,14 @@
           if (!in_array($ip, $devices)) {
             array_push($devices, $ip);
             $browserData = $_BROWSER->getAll(getUserAgentFromLine($line));
-            isset($operatingSystems[$browserData['os_name']])
-              ? $operatingSystems[$browserData['os_name']]++
-              : $operatingSystems[$browserData['os_name']] = 1;
-            isset($browsers[$browserData['browser_name']])
-              ? $browsers[$browserData['browser_name']]++
-              : $browsers[$browserData['browser_name']] = 1;
+            countUpValue($operatingSystems, $browserData['os_name']);
+            countUpValue($browsers, $browserData['browser_name']);
           }
           $request = getRequestFromLine($line);
-          if ($request !== false) isset($successPages[$request])
-            ? $successPages[$request]++
-            : $successPages[$request] = 1;
+          if ($request !== false) countUpValue($successPages, $request);
         } else if (isError($line)) {
           $request = getRequestFromLine($line);
-          if ($request !== false) isset($errorPages[$request])
-              ? $errorPages[$request]++
-              : $errorPages[$request] = 1;
+          if ($request !== false) countUpValue($errorPages, $request);
         }
       }
       $clicksPerDay[$currentDate] = $clicks;

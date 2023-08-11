@@ -7,6 +7,10 @@
     getenv('DOCUMENT_ROOT')
   );
 
+  function countUpValue(array &$array, string $key): void {
+    isset($array[$key]) ? $array[$key]++ : $array[$key] = 1;
+  }
+
   function isRelevantEntry(string $line): bool {
     $line = strtolower($line);
     return strlen($line) > 0

@@ -20,9 +20,7 @@
         }
         $clicksPerHour[getHourFromLine($line)]++;
         $request = getRequestFromLine($line);
-        if ($request !== false) isset($clicksPerFile[$request])
-          ? $clicksPerFile[$request]++
-          : $clicksPerFile[$request] = 1;
+        if ($request !== false) countUpValue($clicksPerFile, $request);
       }
     }
     arsort($clicksPerFile);

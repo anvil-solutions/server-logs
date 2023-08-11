@@ -27,31 +27,20 @@
         $ip = getIpFromLine($line);
         if (!isset($devices[$ip])) {
           $browserData = $_BROWSER->getAll(getUserAgentFromLine($line));
-          isset($operatingSystems[$browserData['os_name']])
-            ? $operatingSystems[$browserData['os_name']]++
-            : $operatingSystems[$browserData['os_name']] = 1;
-          isset($browsers[$browserData['browser_name']])
-            ? $browsers[$browserData['browser_name']]++
-            : $browsers[$browserData['browser_name']] = 1;
+          countUpValue($operatingSystems, $browserData['os_name']);
+          countUpValue($browsers, $browserData['browser_name']);
         }
-        $currentDate = getDateFromLine($line);
-        isset($clicksPerDay[$currentDate])
-          ? $clicksPerDay[$currentDate]++
-          : $clicksPerDay[$currentDate] = 1;
+        countUpValue($clicksPerDay, getDateFromLine($line));
         $request = getRequestFromLine($line);
         if ($request !== false) {
-          isset($successPages[$request])
-            ? $successPages[$request]++
-            : $successPages[$request] = 1;
+          countUpValue($successPages, $request);
           isset($devices[$ip]['requests'])
             ? array_push($devices[$ip]['requests'], [getTimeFromLine($line), $request, getHostFromLine($line)])
             : $devices[$ip]['requests'] = [[getTimeFromLine($line), $request, getHostFromLine($line)]];
         }
       } else if (isError($line)) {
         $request = getRequestFromLine($line);
-        if ($request !== false) isset($errorPages[$request])
-            ? $errorPages[$request]++
-            : $errorPages[$request] = 1;
+        if ($request !== false) countUpValue($errorPages, $request);
       }
     }
     arsort($operatingSystems);

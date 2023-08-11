@@ -81,8 +81,16 @@
     return (int) substr($hour, strpos($hour, ':') + 1, 2);
   }
 
-  function getReadableDate(string $string): string {
+  function getReadableDate(string|null $string): string {
+    if ($string === null) return '...';
     return substr_replace(substr_replace(strip_tags($string), '. ', 6, 1), '. ', 2, 1);
+  }
+
+  function getReadableWeek(string|null $string): string {
+    if ($string === null) return '...';
+    $parts = explode('.', $string);
+    foreach ($parts as $part) if (is_numeric($part)) return $part;
+    return '...';
   }
 
   function strposX(string $haystack, string $needle, int $number = 1) {

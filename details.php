@@ -4,7 +4,6 @@
   require_once(__DIR__.'/src/layout/header.php');
 ?>
 <main>
-  <a href="./">← Zurück zur Startseite</a>
   <h2>Übersicht für den <?= getReadableDate($_GET['j']); ?></h2>
   <p>
     Am <?= getReadableDate($_GET['j']) ?> gab es insgesamt

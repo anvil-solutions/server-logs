@@ -3,7 +3,7 @@
   --text-color: rgba(0, 0, 0, .87);
   --text-color-secondary: rgba(0, 0, 0, .6);
   --hover-color: rgba(128, 128, 128, .125);
-  --border-radius: 16px;
+  --border-radius: 8px;
   --card-shadow: 0 4px 6px 0 rgba(0, 0, 0, .2);
 }
 * {
@@ -39,23 +39,32 @@ h1 {
   letter-spacing: 3px;
   line-height: 18px;
   margin: 0;
-  padding: 18px 16px;
+  padding: 18px 0;
   text-decoration: none;
   text-transform: uppercase;
+}
+.btn-home {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 46px;
+  margin: 4px;
+  background-size: 24px 24px;
+  border-radius: var(--border-radius);
+  font-size: 0;
+  float: left;
+  background: rgba(0,0,0,0) url(../images/home.svg) no-repeat center;
+}
+.btn-home:hover {
+  background-color: var(--hover-color);
 }
 main {
   max-width: 1080px;
   padding: 70px 16px 16px;
   margin: 0 auto;
 }
-h2 {
-  color: var(--accent-color);
-  font-size: 18px;
+h2, h3, h4, h5, h6 {
   font-weight: normal;
-}
-h3 {
-  font-weight: 400;
-  color: var(--accent-color);
 }
 p, ul, table, label, small {
   color: var(--text-color-secondary);
@@ -139,16 +148,24 @@ input, button, a, a * {
 .timeline > :last-child {
   flex-grow: 100;
 }
-.login {
+.login, .password {
   max-width: 480px;
 }
-form {
+.login form {
   display: flex;
 }
-form > .btn {
+.login form > .btn {
   margin: 0 0 0 8px;
 }
-form > input[type=password] {
+.password form {
+  display: grid;
+  grid-template-columns: repeat(2, 2fr);
+  gap: 8px;
+}
+.password button {
+  grid-column: span 2;
+}
+form input[type=password] {
   display: inline-block;
   flex: 1;
   padding: 8px 16px;

@@ -11,6 +11,7 @@
 </head>
 <body>
   <header>
+     <a href="./" class="btn-home" title="Home">Home</a> 
     <h1>Anvil Solutions</h1>
   </header>
   <?php

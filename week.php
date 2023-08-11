@@ -4,10 +4,14 @@
   require_once(__DIR__.'/src/layout/header.php');
 ?>
 <main>
-  <h2>Übersicht für die Kalenderwoche <?= getReadableWeek($_GET['file']) ?></h2>
+  <h2>
+    Übersicht für die Kalenderwoche
+    <?= isset($_GET['file']) ? getReadableWeek($_GET['file']) : '...' ?>
+  </h2>
   <p>
-    In der Kalenderwoche <?= getReadableWeek($_GET['file']) ?> gab es insgesamt
-    <span id="clicks">...</span> Aufrufe von
+    In der Kalenderwoche
+    <?= isset($_GET['file']) ? getReadableWeek($_GET['file']) : '...' ?> gab es
+    insgesamt <span id="clicks">...</span> Aufrufe von
     <span id="devices">...</span> unterschiedlichen Geräten. Die folgenden
     Graphen zeigen Ihnen den zeitlichen Verlauf und Geräteinformationen.
   </p>

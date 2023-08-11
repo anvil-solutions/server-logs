@@ -4,10 +4,13 @@
   require_once(__DIR__.'/src/layout/header.php');
 ?>
 <main>
-  <h2>Übersicht für den <?= getReadableDate($_GET['date']) ?></h2>
+  <h2>
+    Übersicht für den
+    <?= isset($_GET['date']) ? getReadableDate($_GET['date']) : '...' ?>
+  </h2>
   <p>
-    Am <?= getReadableDate($_GET['date']) ?> gab es insgesamt
-    <span id="clicks">...</span> Aufrufe von
+    Am <?= isset($_GET['date']) ? getReadableDate($_GET['date']) : '...' ?> gab
+    es insgesamt <span id="clicks">...</span> Aufrufe von
     <span id="devices">...</span> unterschiedlichen Geräten. Die folgenden
     Graphen zeigen Ihnen den zeitlichen Verlauf und Geräteinformationen.
   </p>

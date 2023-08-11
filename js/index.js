@@ -23,7 +23,16 @@ function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
   );
 }
 
-function addLinkTable(element) {
+function getReadableWeek(file) {
+  const parts = file.split('.');
+  for (const part of parts) {
+    const parsedNumber = parseInt(part, 10);
+    if (!isNaN(parsedNumber)) return 'KW ' + parsedNumber;
+  }
+  return '?';
+}
+
+function addDayLinkTable(element) {
   element.textContent = '';
   const todaysElement = document.createElement('a');
   todaysElement.href = './day?file=access.log.current&date=' + todaysLogs.date;
@@ -39,12 +48,28 @@ function addLinkTable(element) {
   }
 }
 
+function addWeekLinkTable(element) {
+  element.textContent = '';
+  for (
+    const file of Object.entries(combinedLogs.fileDateMap)
+      .filter(entry => entry[1].length === 7)
+      .map(entry => entry[0])
+      .reverse()
+  ) {
+    const dateElement = document.createElement('a');
+    dateElement.href = './week?file=' + file;
+    dateElement.append(document.createTextNode(getReadableWeek(file)));
+    element.append(dateElement);
+  }
+}
+
 document.getElementById(
   'lastRefreshed'
 ).textContent = new Date().toLocaleTimeString('de');
 document.getElementById('clicks').textContent = todaysLogs.clicks.toString();
 document.getElementById('devices').textContent = todaysLogs.devices.toString();
-addLinkTable(document.getElementById('linkTable'));
+addDayLinkTable(document.getElementById('dayLinkTable'));
+addWeekLinkTable(document.getElementById('weekLinkTable'));
 document.getElementById(
   'averageClicksPerDay'
 ).textContent = combinedLogs.averageClicksPerDay.toString();

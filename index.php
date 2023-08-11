@@ -20,10 +20,13 @@
   <h2>Detailansicht</h2>
   <p>
     Die Detailansichten zeigen Ihnen eine genauere Auswertung der Daten für den
-    gewählten Tag. Klicken Sie auf einen Tag um eine Detailansicht des
-    jeweiligen Datums zu erhalten.
+    gewählten Tag oder die gewählte Woche. Klicken Sie auf einen Link um eine Detailansicht
+    des jeweiligen Eintrags zu erhalten.
   </p>
-  <div id="linkTable" class="week-grid"></div>
+  <h3>Tagesdetails</h3>
+  <div id="dayLinkTable" class="week-grid"></div>
+  <h3>Wochendetails</h3>
+  <div id="weekLinkTable" class="week-grid"></div>
   <h2>Verlauf</h2>
   <p>
     Die folgenden Graphen zeigen Ihnen die Anzahl an Geräten und Klicks pro Tag

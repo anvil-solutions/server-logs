@@ -78,7 +78,10 @@ initChart(
   '#chartClicksPerFile', {
     datasets: [{ values: Object.values(todaysLogs.clicksPerFile).slice(0, 5) }],
     labels: Object.keys(todaysLogs.clicksPerFile).slice(0, 5)
-  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
+  }, {
+    formatTooltipX: value => value.replace(' ― ', '<br>'),
+    formatTooltipY: value => value + ' Klicks'
+  }, { xAxisMode: 'tick' }
 );
 initChart(
   '#chartClicksPerDay', {
@@ -124,11 +127,17 @@ initChart(
       }
     ],
     labels: Object.keys(combinedLogs.successPages).slice(0, 5)
-  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
+  }, {
+    formatTooltipX: value => value.replace(' ― ', '<br>'),
+    formatTooltipY: value => value + ' Klicks'
+  }, { xAxisMode: 'tick' }
 );
 initChart(
   '#chartErrorPages', {
     datasets: [{ values: Object.values(combinedLogs.errorPages).slice(0, 5) }],
     labels: Object.keys(combinedLogs.errorPages).slice(0, 5)
-  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
+  }, {
+    formatTooltipX: value => value.replace(' ― ', '<br>'),
+    formatTooltipY: value => value + ' Klicks'
+  }, { xAxisMode: 'tick' }
 );

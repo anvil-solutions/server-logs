@@ -40,26 +40,38 @@ initChart(
   }
 );
 initChart(
-  '#chartEntryPages', {
+  '#chartEntryPages',
+  {
     datasets: [{ values: Object.values(data.entryPages).slice(0, 5) }],
     labels: Object.keys(data.entryPages).slice(0, 5)
-  }, {}, { xAxisMode: 'tick' }
+  },
+  { formatTooltipX: value => value.replace(' ― ', '<br>') },
+  { xAxisMode: 'tick' }
 );
 initChart(
-  '#chartExitPages', {
+  '#chartExitPages',
+  {
     datasets: [{ values: Object.values(data.exitPages).slice(0, 5) }],
     labels: Object.keys(data.exitPages).slice(0, 5)
-  }, {}, { xAxisMode: 'tick' }
+  },
+  { formatTooltipX: value => value.replace(' ― ', '<br>') },
+  { xAxisMode: 'tick' }
 );
 initChart(
   '#chartSuccessPages', {
     datasets: [{ values: Object.values(data.successPages).slice(0, 5) }],
     labels: Object.keys(data.successPages).slice(0, 5)
-  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
+  }, {
+    formatTooltipX: value => value.replace(' ― ', '<br>'),
+    formatTooltipY: value => value + ' Klicks'
+  }, { xAxisMode: 'tick' }
 );
 initChart(
   '#chartErrorPages', {
     datasets: [{ values: Object.values(data.errorPages).slice(0, 5) }],
     labels: Object.keys(data.errorPages).slice(0, 5)
-  }, { formatTooltipY: value => value + ' Klicks' }, { xAxisMode: 'tick' }
+  }, {
+    formatTooltipX: value => value.replace(' ― ', '<br>'),
+    formatTooltipY: value => value + ' Klicks'
+  }, { xAxisMode: 'tick' }
 );

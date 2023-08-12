@@ -44,10 +44,16 @@
             countUpValue($browsers, $browserData['browser_name']);
           }
           $request = getRequestFromLine($line);
-          if ($request !== false) countUpValue($successPages, $request);
+          if ($request !== false) countUpValue(
+            $successPages,
+            $request.' ― '.getHostFromLine($line)
+          );
         } else if (isError($line)) {
           $request = getRequestFromLine($line);
-          if ($request !== false) countUpValue($errorPages, $request);
+          if ($request !== false) countUpValue(
+            $errorPages,
+            $request.' ― '.getHostFromLine($line)
+          );
         }
       }
       $clicksPerDay[$currentDate] = $clicks;

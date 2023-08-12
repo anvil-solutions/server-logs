@@ -20,7 +20,10 @@
         }
         $clicksPerHour[getHourFromLine($line)]++;
         $request = getRequestFromLine($line);
-        if ($request !== false) countUpValue($clicksPerFile, $request);
+        if ($request !== false) countUpValue(
+          $clicksPerFile,
+          $request.' ― '.getHostFromLine($line)
+        );
       }
     }
     arsort($clicksPerFile);

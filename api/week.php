@@ -33,14 +33,20 @@
         countUpValue($clicksPerDay, getDateFromLine($line));
         $request = getRequestFromLine($line);
         if ($request !== false) {
-          countUpValue($successPages, $request);
+          countUpValue(
+            $successPages,
+            $request.' ― '.getHostFromLine($line)
+          );
           isset($devices[$ip]['requests'])
             ? array_push($devices[$ip]['requests'], [getTimeFromLine($line), $request, getHostFromLine($line)])
             : $devices[$ip]['requests'] = [[getTimeFromLine($line), $request, getHostFromLine($line)]];
         }
       } else if (isError($line)) {
         $request = getRequestFromLine($line);
-        if ($request !== false) countUpValue($errorPages, $request);
+        if ($request !== false) countUpValue(
+          $errorPages,
+          $request.' ― '.getHostFromLine($line)
+        );
       }
     }
     arsort($operatingSystems);
@@ -51,18 +57,21 @@
       return (count($b['requests']) - count($a['requests']));
     });
 
-    $sessionData = [];
+    $entryPages = [];
+    $exitPages = [];
     $bouncedSessions = 0;
     foreach ($devices as $key => $device) {
-      $sessionData[$key] = [];
-      array_push($sessionData[$key], $device['requests'][0][1]);
-      array_push($sessionData[$key], array_slice($device['requests'], -1)[0][1]);
+      countUpValue(
+        $entryPages,
+        $device['requests'][0][1].' ― '.$device['requests'][0][2]
+      );
+      countUpValue(
+        $exitPages,
+        array_slice($device['requests'], -1)[0][1].' ― '.array_slice($device['requests'], -1)[0][2]
+      );
       $devices[$key]['duration'] = strtotime(array_slice($device['requests'], -1)[0][0]) - strtotime($device['requests'][0][0]);
       if (count($device['requests']) === 1) $bouncedSessions++;
     }
-
-    $entryPages = array_count_values(array_column($sessionData, 0));
-    $exitPages = array_count_values(array_column($sessionData, 1));
     arsort($entryPages);
     arsort($exitPages);
 

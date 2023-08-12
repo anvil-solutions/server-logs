@@ -40,8 +40,9 @@
         $_SESSION['trys'] = 0;
       } else {
         $this->addFailedAttempt();
-        $this->warningMessage = 'The access key entered is invalid, please check and '.
-          'try again or contact support for further assistance.';
+        $this->warningMessage = 'Das eingegebene Kennwort ist ungültig. Bitte
+          überprüfen Sie es und versuchen Sie es erneut oder kontaktieren Sie
+          den Support für weitere Unterstützung.';
       }
     }
 

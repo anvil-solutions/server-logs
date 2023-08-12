@@ -11,8 +11,8 @@
   <p>
     Am <?= isset($_GET['date']) ? getReadableDate($_GET['date']) : '...' ?> gab
     es insgesamt <span id="clicks">...</span> Aufrufe von
-    <span id="devices">...</span> unterschiedlichen Geräten. Die folgenden
-    Graphen zeigen Ihnen den zeitlichen Verlauf und Geräteinformationen.
+    <span id="devices">...</span> verschiedenen Geräten. Die folgenden Graphen
+    zeigen Ihnen den zeitlichen Verlauf und Informationen zu den Geräten.
   </p>
   <div id="chartClicksPerHour" data-title="Klicks pro Stunde" data-type="line"></div>
   <div class="res-grid">
@@ -21,7 +21,7 @@
   </div>
   <h2>Sitzungen</h2>
   <p>
-    Der folgende Abschnitt beschäftigt sich mit den anonym aufgezeichneten
+    Der folgende Abschnitt beschäftigt sich mit den anonym erfassten
     Sitzungen. Zu Sehen sind die am häufigsten aufgerufenen Seiten, sowie die
     beliebtesten Einstiegs- und Ausstiegsseiten. Die durchschnittliche
     Sitzungsdauer beträgt <span id="averageSessionDuration">...</span> mit
@@ -36,9 +36,9 @@
   <div id="chartErrorPages" data-title="Fehlerseiten" data-type="bar"></div>
   <h2>Besucher Flow</h2>
   <p>
-    Es folgt eine genauere Aufschlüsselung der einzelnen Sitzungen. Sie sehen
-    allgemeine Informationen zur Sitzung als auch die Reihenfolge und Uhrzeit
-    der besuchten Seiten.
+    Anschließend erfolgt eine detailliertere Aufschlüsselung der einzelnen
+    Sitzungen. Hier finden Sie allgemeine Informationen zur Sitzung sowie die
+    Reihenfolge und Uhrzeit der besuchten Seiten.
   </p>
   <div id="sessions"></div>
 </main>

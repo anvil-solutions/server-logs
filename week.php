@@ -12,8 +12,8 @@
     In der Kalenderwoche
     <?= isset($_GET['file']) ? getReadableWeek($_GET['file']) : '...' ?> gab es
     insgesamt <span id="clicks">...</span> Aufrufe von
-    <span id="devices">...</span> unterschiedlichen Geräten. Die folgenden
-    Graphen zeigen Ihnen den zeitlichen Verlauf und Geräteinformationen.
+    <span id="devices">...</span> verschiedenen Geräten. Die folgenden Graphen
+    zeigen Ihnen den zeitlichen Verlauf und Informationen zu den Geräten.
   </p>
   <div id="chartClicksPerDay" data-title="Klicks pro Tag" data-type="line"></div>
   <div class="res-grid">
@@ -22,7 +22,7 @@
   </div>
   <h2>Sitzungen</h2>
   <p>
-    Der folgende Abschnitt beschäftigt sich mit den anonym aufgezeichneten
+    Der folgende Abschnitt beschäftigt sich mit den anonym erfassten
     Sitzungen. Zu Sehen sind die am häufigsten aufgerufenen Seiten, sowie die
     beliebtesten Einstiegs- und Ausstiegsseiten. Die durchschnittliche
     Sitzungsdauer beträgt <span id="averageSessionDuration">...</span> mit

@@ -190,6 +190,11 @@ form input[type=password] {
   box-shadow: var(--card-shadow);
   outline: 0;
 }
+
+text.data-point-value {
+  fill: #555b51;
+}
+
 @media screen and (min-width: 1080px) {
   .res-grid {
     grid-template-columns: repeat(2, 2fr);

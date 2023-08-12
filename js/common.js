@@ -4,6 +4,7 @@ import {
 
 export function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
   const { title, type } = document.querySelector(id).dataset;
+  if (type === 'bar') axisOptions.xAxisMode = 'tick';
   return new Chart(
     id,
     {
@@ -13,7 +14,8 @@ export function initChart(id, data, tooltipOptions = {}, axisOptions = {}) {
       lineOptions: { hideDots: 1, regionFill: 1 },
       title,
       tooltipOptions,
-      type
+      type,
+      valuesOverPoints: 1
     }
   );
 }

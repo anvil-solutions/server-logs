@@ -81,7 +81,7 @@ initChart(
   }, {
     formatTooltipX: value => value.replace(' ― ', '<br>'),
     formatTooltipY: value => value + ' Klicks'
-  }, { xAxisMode: 'tick' }
+  }
 );
 initChart(
   '#chartClicksPerDay', {
@@ -130,7 +130,7 @@ initChart(
   }, {
     formatTooltipX: value => value.replace(' ― ', '<br>'),
     formatTooltipY: value => value + ' Klicks'
-  }, { xAxisMode: 'tick' }
+  }
 );
 initChart(
   '#chartErrorPages', {
@@ -139,5 +139,5 @@ initChart(
   }, {
     formatTooltipX: value => value.replace(' ― ', '<br>'),
     formatTooltipY: value => value + ' Klicks'
-  }, { xAxisMode: 'tick' }
+  }
 );

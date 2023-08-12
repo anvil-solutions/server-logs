@@ -79,31 +79,25 @@ initChart(
   '#chartOperatingSystems', {
     datasets: [{ values: Object.values(data.operatingSystems) }],
     labels: Object.keys(data.operatingSystems)
-  }, { formatTooltipY: value => value + ' Geräte' }, { xAxisMode: 'tick' }
+  }, { formatTooltipY: value => value + ' Geräte' }
 );
 initChart(
   '#chartBrowsers', {
     datasets: [{ values: Object.values(data.browsers) }],
     labels: Object.keys(data.browsers)
-  }, { formatTooltipY: value => value + ' Geräte' }, { xAxisMode: 'tick' }
+  }, { formatTooltipY: value => value + ' Geräte' }
 );
 initChart(
-  '#chartEntryPages',
-  {
+  '#chartEntryPages', {
     datasets: [{ values: Object.values(data.entryPages).slice(0, 5) }],
     labels: Object.keys(data.entryPages).slice(0, 5)
-  },
-  { formatTooltipX: value => value.replace(' ― ', '<br>') },
-  { xAxisMode: 'tick' }
+  }, { formatTooltipX: value => value.replace(' ― ', '<br>') }
 );
 initChart(
-  '#chartExitPages',
-  {
+  '#chartExitPages', {
     datasets: [{ values: Object.values(data.exitPages).slice(0, 5) }],
     labels: Object.keys(data.exitPages).slice(0, 5)
-  },
-  { formatTooltipX: value => value.replace(' ― ', '<br>') },
-  { xAxisMode: 'tick' }
+  }, { formatTooltipX: value => value.replace(' ― ', '<br>') }
 );
 initChart(
   '#chartSuccessPages', {
@@ -112,7 +106,7 @@ initChart(
   }, {
     formatTooltipX: value => value.replace(' ― ', '<br>'),
     formatTooltipY: value => value + ' Klicks'
-  }, { xAxisMode: 'tick' }
+  }
 );
 initChart(
   '#chartErrorPages', {
@@ -121,5 +115,5 @@ initChart(
   }, {
     formatTooltipX: value => value.replace(' ― ', '<br>'),
     formatTooltipY: value => value + ' Klicks'
-  }, { xAxisMode: 'tick' }
+  }
 );

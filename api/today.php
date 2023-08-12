@@ -35,7 +35,7 @@
   }
 
   header('Content-Type: application/json; charset=utf-8');
-  if ($loggedIn === false) {
+  if (!Session::getInstance()->isLoggedIn()) {
     http_response_code(401);
     echo '{}';
     exit;

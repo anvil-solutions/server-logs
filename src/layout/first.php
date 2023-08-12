@@ -4,6 +4,7 @@
     Bitte legen sie ein Kennwort für Ihren neuen Zugang fest.
   </p>
   <form method="POST">
+    <input type="hidden" name="csrf" value="<?= Session::getInstance()->getCSRFToken() ?>">
     <label for="newPassword">Kennwort</label>
     <input name="newPassword" type="password" required id="newPassword" oninput="setValidity()" autocomplete="new-password">
     <label for="newPasswordRepeat">Kennwort bestätigen</label>

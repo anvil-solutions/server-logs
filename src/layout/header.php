@@ -11,18 +11,22 @@
 </head>
 <body>
   <header>
-     <a href="./" class="btn-home" title="Home">Home</a> 
+     <a href="./" class="btn-home" title="Home">Home</a>
     <h1>Anvil Solutions</h1>
   </header>
   <?php
-    if ($loggedIn === false) {
+    if (!empty(Session::getInstance()->getWarningMessage())) {
+      echo '<p class="warning-message">'.Session::getInstance()->getWarningMessage().'</p>';
+    }
+
+    if (Session::getInstance()->isLoggedIn() !== true) {
       if ($newUser) {
-        include('first.html');
-      } else if (isset($_SESSION['trys']) && $_SESSION['trys'] > 5) {
-        http_response_code(418);
-        include('locked.html');
+        require 'first.php';
+      } else if (Session::getInstance()->canLogin()) {
+        require 'login.php';
       } else {
-        include('login.html');
+        http_response_code(418);
+        require 'locked.html';
       }
       exit;
     }

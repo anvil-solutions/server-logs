@@ -87,7 +87,12 @@
 
   function getReadableDate(string|null $string): string {
     if ($string === null) return '...';
-    return substr_replace(substr_replace(strip_tags($string), '. ', 6, 1), '. ', 2, 1);
+    return substr_replace(
+      substr_replace(strip_tags($string), '. ', 6, 1),
+      '. ',
+      2,
+      1
+    );
   }
 
   function getReadableWeek(string|null $string): string {
@@ -99,9 +104,12 @@
 
   function strposX(string $haystack, string $needle, int $number = 1) {
     if (substr_count($haystack, $needle) < $number) return false;
-    else return strpos($haystack, $needle, $number > 1
-      ? strposX($haystack, $needle, $number - 1) + strlen($needle)
-      : 0
+    else return strpos(
+      $haystack,
+      $needle,
+      $number > 1
+        ? strposX($haystack, $needle, $number - 1) + strlen($needle)
+        : 0
     );
   }
 ?>

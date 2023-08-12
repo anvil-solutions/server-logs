@@ -5,6 +5,7 @@
   --hover-color: rgba(128, 128, 128, .125);
   --border-radius: 8px;
   --card-shadow: 0 4px 6px 0 rgba(0, 0, 0, .2);
+  --highlight-color: #D50000;
 }
 * {
   -webkit-tap-highlight-color: transparent;
@@ -117,6 +118,16 @@ button {
 }
 input, button, a, a * {
   transition-duration: .25s;
+}
+.warning-message {
+  width: calc(100% - 32px);
+  max-width: 480px;
+  padding: 70px 16px 0;
+  margin: 0 auto;
+  color: var(--highlight-color);
+}
+.warning-message ~ main {
+  padding-top: 16px;
 }
 .res-grid, .week-grid {
   display: grid;

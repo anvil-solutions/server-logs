@@ -33,7 +33,7 @@
       'devices' => count($devices),
       'clicksPerHour' => $clicksPerHour,
       'clicksPerFile' => $clicksPerFile,
-      'averageClicksPerHour' => array_sum($clicksPerHour) / count($clicksPerHour)
+      'averageClicksPerHour' => array_sum($clicksPerHour) / max(1, count($clicksPerHour))
     ];
   }
 

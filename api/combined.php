@@ -65,8 +65,8 @@
     arsort($successPages);
     arsort($errorPages);
     return [
-      'averageClicksPerDay' => round(array_sum($clicksPerDay) / count($clicksPerDay), 2),
-      'averageDevicesPerDay' => round(array_sum($devicesPerDay) / count($devicesPerDay), 2),
+      'averageClicksPerDay' => round(array_sum($clicksPerDay) / max(1, count($clicksPerDay)), 2),
+      'averageDevicesPerDay' => round(array_sum($devicesPerDay) / max(1, count($devicesPerDay)), 2),
       'clicksPerDay' => $clicksPerDay,
       'devicesPerDay' => $devicesPerDay,
       'fileDateMap' => $fileDateMap,

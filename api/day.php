@@ -91,7 +91,7 @@
       'entryPages' => $entryPages,
       'exitPages' => $exitPages,
       'bounceRate' => $sessionDatasetSize === 0 ? 0 : round($bouncedSessions / $sessionDatasetSize * 100),
-      'averageClicksPerHour' => array_sum($clicksPerHour) / count($clicksPerHour),
+      'averageClicksPerHour' => array_sum($clicksPerHour) / max(1, count($clicksPerHour)),
       'averageSessionDuration' => $sessionDatasetSize === 0 ? 0 : (int) (array_sum(array_column($devices, 'duration')) / $sessionDatasetSize),
       'averageSessionClicks' => $sessionDatasetSize === 0 ? 0 : round(array_sum(array_map('count', array_column($devices, 'requests'))) / $sessionDatasetSize, 2)
     ];

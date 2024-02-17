@@ -7,6 +7,17 @@
     getenv('DOCUMENT_ROOT')
   );
 
+  function getFile(string $path): array {
+    if (str_ends_with($path, '.gz')) {
+      $file = '';
+      $resource = gzopen($path, 'r');
+      while (!gzeof($resource)) $file .= gzread($resource, 4096);
+      gzclose($resource);
+      return explode(PHP_EOL, $file);
+    }
+    return file($path);
+  }
+
   function countUpValue(array &$array, string $key): void {
     isset($array[$key]) ? $array[$key]++ : $array[$key] = 1;
   }

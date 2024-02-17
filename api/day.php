@@ -9,11 +9,7 @@
     if (is_dir($path) || !file_exists($path)) return [];
 
     global $_BROWSER;
-    $file = '';
-    $resource = gzopen($path, 'r');
-    while (!gzeof($resource)) $file .= gzread($resource, 4096);
-    gzclose($resource);
-    $file = explode(PHP_EOL, $file);
+    $file = getFile($path);
     $clicks = 0;
     $devices = [];
     $clicksPerHour = array_fill(0, 24, 0);

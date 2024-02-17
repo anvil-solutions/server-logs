@@ -15,11 +15,7 @@
     $successPages = [];
     $errorPages = [];
     foreach ($files as $filename) {
-      $file = '';
-      $resource = gzopen($path.'/'.$filename, 'r');
-      while (!gzeof($resource)) $file .= gzread($resource, 4096);
-      gzclose($resource);
-      $file = explode(PHP_EOL, $file);
+      $file = getFile($path.'/'.$filename);
       $clicks = 0;
       $devices = [];
       $fileDateMap[$filename] = [];
@@ -88,7 +84,7 @@
   $files = array_filter(
     array_diff(scandir($path), array('.', '..')),
     function ($file) {
-      return strpos($file, 'access.log') > -1 && strpos($file, 'gz') > -1;
+      return strpos($file, 'access.log') > -1 && strpos($file, 'current') === false;
     }
   );
   echo json_encode(parseZippedLogs($path, $files));

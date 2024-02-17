@@ -6,7 +6,7 @@
   function parseLogs(string $path): array|null {
     if (is_dir($path) || !file_exists($path)) return null;
 
-    $file = file($path);
+    $file = getFile($path);
     $clicks = 0;
     $devices = [];
     $clicksPerHour = array_fill(0, (int)date('G') + 1, 0);
